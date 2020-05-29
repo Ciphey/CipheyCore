@@ -19,8 +19,9 @@ namespace Ciphey {
     return ret;
   }
 
-  inline Ciphey::caesar::key_t caesar_crack(std::shared_ptr<const simple_analysis_res> in, prob_table expected,
-                                            group_t group, prob_t p_value, bool do_filter_missing = false) {
+  inline Ciphey::crack_results<Ciphey::caesar::key_t> caesar_crack(std::shared_ptr<const simple_analysis_res> in,
+                                                                   prob_table expected, group_t group,
+                                                                   bool do_filter_missing = false, prob_t p_value = 1) {
     if (do_filter_missing) {
       prob_table tab = in->probs;
       filter_missing(tab, expected);
@@ -28,5 +29,24 @@ namespace Ciphey {
     }
 
     return caesar::crack(in->probs, expected, group, in->val.length(), p_value);
+  }
+
+  inline Ciphey::crack_results<Ciphey::vigenere::key_t> viginere_crack(string_t str,
+                                                                       prob_table const& expected,
+                                                                       group_t const& group, size_t key_length,
+                                                                       bool do_filter_missing = false,
+                                                                       prob_t p_value = 1) {
+    windowed_freq_table freqs(key_length);
+    freq_analysis(freqs, str);
+    windowed_prob_table probs;
+    probs.reserve(key_length);
+    for (auto& i : freqs)
+      freq_conv(probs.emplace_back(), i);
+
+    if (do_filter_missing)
+      for (auto& i : probs)
+        filter_missing(i, expected);
+
+    return vigenere::crack(probs, expected, group, str.length(), p_value);
   }
 }

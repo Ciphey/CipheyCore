@@ -26,15 +26,23 @@ namespace Ciphey::caesar {
     }
   }
 
-  key_t crack(prob_table observed, prob_table const& expected, group_t const& group, freq_t count, prob_t p_value) {
+  crack_results<key_t> crack(prob_table observed, prob_table const& expected, group_t const& group, freq_t count, prob_t p_value) {
     if (group.size() == 0)
       throw std::invalid_argument{"Empty group given"};
 
+    // We want to maximise the key's p value up to `p_value`
+    crack_results<key_t> ret = { 0 };
+
     rotate_prob_table(observed, group);
-    for (key_t key = 1; key < group.size(); ++key, rotate_prob_table(observed, group))
-      if (gof_chisq(create_assoc_table(observed, expected), group.size() - 1, p_value))
-        return key;
-    return 0;
+    for (key_t key = 1; key < group.size(); ++key, rotate_prob_table(observed, group)) {
+      auto key_p_value = gof_chisq(create_assoc_table(observed, expected), group.size() - 1);
+      if (key_p_value > p_value)
+        return {.key = key, .p_value = key_p_value };
+      else if (key_p_value > ret.p_value)
+        ret = {.key = key, .p_value = key_p_value };
+    }
+    // On failure, we return the lowest p_value
+    return ret;
   }
 
   void crypt(string_t& str, key_t const& key, group_t const& group) {
@@ -47,15 +55,21 @@ namespace Ciphey::caesar {
   }
 }
 
-//namespace Ciphey::vigenere {
-//  void crypt(string_t& str, const std::vector<uint8_t>& key) {
-//    for (size_t i = 0; i < str.size(); ++i) {
+namespace Ciphey::vigenere {
+  crack_results<key_t> crack(windowed_prob_table observed, prob_table const& expected, group_t const& group, freq_t count, prob_t p_value) {
+    crack_results<key_t> ret;
+    ret.p_value = 1;
+    ret.key.resize(observed.size());
+    // Solve as distinct substitution cyphers
+    for (size_t i = 0; i < observed.size(); ++i) {
+      auto res = caesar::crack(std::move(observed[i]), expected, group, count / observed.size(),
+                               // We are multiplying the probabilities, so this ensures it stays below p_value
+                               ::powf(p_value, 1./observed.size()));
+      ret.key[i] = res.key;
+      // The probability is the product of all the child probabilities
+      ret.p_value *= res.p_value;
+    }
 
-//    }
-//  }
-
-//  key_t crack_context::get_next() {
-//    std::atomic<bool> stop = false;
-//    // We can easily be parallel over the elements of the key
-//  }
-//}
+    return ret;
+  }
+}

@@ -3,7 +3,7 @@
 #include <Ciphey/freq.hpp>
 
 TEST(CipheyCore, chisq) {
-  auto res = Ciphey::critical_chisq(13, 0.05);
+  auto res = 1 - Ciphey::chisq_cdf(13, 22.36);
 
-  ASSERT_LE(::abs(res - 22.36), 0.01);
+  ASSERT_LE(::abs(res - 0.05), 0.01);
 }

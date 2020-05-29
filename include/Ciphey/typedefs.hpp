@@ -14,7 +14,9 @@ namespace Ciphey {
   using string_t = std::basic_string<char_t>;
 
   using freq_table = std::map<char_t, freq_t>;
+  using windowed_freq_table = std::vector<freq_table>;
   using prob_table = std::map<char_t, prob_t>;
+  using windowed_prob_table = std::vector<prob_table>;
 
   using group_t = std::vector<char_t>;
 

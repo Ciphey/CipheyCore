@@ -26,17 +26,18 @@ namespace Ciphey {
     return chisq;
   }
 
-  float_t critical_chisq(freq_t dof, prob_t p_value) {
-    return 2 * boost::math::gamma_q_inv(static_cast<float>(dof) / 2, p_value);
+  float_t chisq_cdf(freq_t dof, float_t up_to) {
+    return boost::math::gamma_p(static_cast<float>(dof) / 2, up_to / 2);
   }
 
-  bool gof_chisq(assoc_table const& assoc, freq_t count, prob_t p_value) {
-    auto stat = run_chisq(assoc, count);
-    if (stat == std::numeric_limits<float_t>::infinity())
-      return false;
 
-    auto critical = critical_chisq(count - 1, p_value);
-    return stat <= critical;
+  prob_t gof_chisq(assoc_table const& assoc, freq_t count) {
+    auto stat = run_chisq(assoc, count);
+    // Handle the asymptopic value
+    if (stat == std::numeric_limits<float_t>::infinity())
+      return 0;
+    // We want the upper tail
+    return 1 - chisq_cdf(count - 1, stat);
   }
 
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected) {
@@ -88,6 +89,11 @@ namespace Ciphey {
       target.erase(i);
 
     return;
+  }
+
+  void freq_analysis(windowed_freq_table& tabs, string_t const& str) {
+    for (size_t i = 0; i < str.size(); ++i)
+      ++tabs[i % tabs.size()][str[i]];
   }
 }
 
