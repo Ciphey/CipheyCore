@@ -1,0 +1,3 @@
+[submodule "cppthings"]
+	path = cppthings
+	url = https://github.com/Cyclic3/cppthings
