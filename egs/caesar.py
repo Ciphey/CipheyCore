@@ -32,4 +32,4 @@ expected = {
 }
 group = list("abcdefghijklmnopqrstuvwxyz")
 res = CipheyCore.caesar_crack(analysis, expected, group, True)
-print(res.key)
+print(res[0].key == 11)

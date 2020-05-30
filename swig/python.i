@@ -26,6 +26,10 @@ namespace std {
 %include "Ciphey/candidates.swig.hxx"
 %include "Ciphey/swig.hpp"
 namespace Ciphey {
-  %template(caesar_results) crack_results<Ciphey::caesar::key_t>;
-  %template(vigenere_results) crack_results<Ciphey::vigenere::key_t>;
+  %template(caesar_results_elem) crack_result<Ciphey::caesar::key_t>;
+  %template(vigenere_results_elem) crack_result<Ciphey::vigenere::key_t>;
+}
+namespace std {
+  %template(caesar_results) vector<Ciphey::crack_result<Ciphey::caesar::key_t>>;
+  %template(vigenere_results) vector<Ciphey::crack_result<Ciphey::vigenere::key_t>>;
 }

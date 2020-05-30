@@ -37,7 +37,8 @@ namespace Ciphey {
     if (stat == std::numeric_limits<float_t>::infinity())
       return 0;
     // We want the upper tail
-    return 1 - chisq_cdf(count - 1, stat);
+    auto p_value = 1 - chisq_cdf(count - 1, stat);
+    return p_value;
   }
 
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected) {
@@ -94,6 +95,16 @@ namespace Ciphey {
   void freq_analysis(windowed_freq_table& tabs, string_t const& str) {
     for (size_t i = 0; i < str.size(); ++i)
       ++tabs[i % tabs.size()][str[i]];
+  }
+
+  void freq_analysis(windowed_freq_table& tabs, string_t const& str, std::set<char_t> domain) {
+    size_t i = 0;
+    for (auto& c : str) {
+      if (domain.count(c)) {
+        ++tabs[i % tabs.size()][c];
+        ++i;
+      }
+    }
   }
 }
 

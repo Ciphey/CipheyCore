@@ -19,6 +19,7 @@ namespace Ciphey {
   using windowed_prob_table = std::vector<prob_table>;
 
   using group_t = std::vector<char_t>;
+  using inverse_group_t = std::map<char_t, size_t>;
 
   namespace caesar {
     using key_t = size_t;

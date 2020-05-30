@@ -2,7 +2,7 @@
 
 namespace Ciphey {
   template<typename Key>
-  struct crack_results {
+  struct crack_result {
     Key key;
     prob_t p_value;
   };

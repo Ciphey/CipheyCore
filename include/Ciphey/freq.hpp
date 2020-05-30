@@ -4,6 +4,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <vector>
 
 #include <cmath>
@@ -24,6 +25,7 @@ namespace Ciphey {
 
   void freq_analysis(freq_table&, string_t const& str);
   void freq_analysis(windowed_freq_table&, string_t const& str);
+  void freq_analysis(windowed_freq_table&, string_t const& str, std::set<char_t> domain);
   void freq_conv(prob_table&, freq_table const& freqs);
   void freq_conv(prob_table&, freq_table const& freqs, freq_t total_len);
 

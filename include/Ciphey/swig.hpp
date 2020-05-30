@@ -19,9 +19,10 @@ namespace Ciphey {
     return ret;
   }
 
-  inline Ciphey::crack_results<Ciphey::caesar::key_t> caesar_crack(std::shared_ptr<const simple_analysis_res> in,
-                                                                   prob_table expected, group_t group,
-                                                                   bool do_filter_missing = false, prob_t p_value = 1) {
+  inline std::vector<Ciphey::crack_result<Ciphey::caesar::key_t>> caesar_crack(std::shared_ptr<const simple_analysis_res> in,
+                                                                               prob_table expected, group_t group,
+                                                                               bool do_filter_missing = true,
+                                                                               prob_t p_value = default_p_value) {
     if (do_filter_missing) {
       prob_table tab = in->probs;
       filter_missing(tab, expected);
@@ -36,22 +37,31 @@ namespace Ciphey {
     return str;
   }
 
-  inline Ciphey::crack_results<Ciphey::vigenere::key_t> viginere_crack(string_t str,
-                                                                       prob_table const& expected,
-                                                                       group_t const& group, size_t key_length,
-                                                                       bool do_filter_missing = false,
-                                                                       prob_t p_value = 1) {
+  inline std::vector<Ciphey::crack_result<Ciphey::vigenere::key_t>> vigenere_crack(string_t str,
+                                                                                   prob_table const& expected,
+                                                                                   group_t const& group, size_t key_length,
+                                                                                   bool do_filter_missing = true,
+                                                                                   prob_t p_value = default_p_value) {
     windowed_freq_table freqs(key_length);
-    freq_analysis(freqs, str);
+    if (do_filter_missing) {
+      std::set<char_t> domain;
+      for (auto& i : expected)
+        domain.emplace(i.first);
+      freq_analysis(freqs, str, domain);
+    }
+    else
+      freq_analysis(freqs, str);
+
     windowed_prob_table probs;
     probs.reserve(key_length);
     for (auto& i : freqs)
       freq_conv(probs.emplace_back(), i);
 
-    if (do_filter_missing)
-      for (auto& i : probs)
-        filter_missing(i, expected);
-
     return vigenere::crack(probs, expected, group, str.length(), p_value);
+  }
+
+  inline string_t vigenere_decrypt(string_t str, Ciphey::vigenere::key_t key, group_t group) {
+    vigenere::decrypt(str, key, group);
+    return str;
   }
 }
