@@ -31,5 +31,5 @@ expected = {
   "z": 0.077e-2
 }
 group = list("abcdefghijklmnopqrstuvwxyz")
-res = caesar_crack(analysis, expected, group, true)
+res = CipheyCore.caesar_crack(analysis, expected, group, True)
 print(res.key)
