@@ -6,11 +6,13 @@
 #include <thread>
 #include <stdexcept>
 
+#include <iostream>
+
 namespace Ciphey {
-  std::map<size_t, char_t> invert_group(group_t const& group) {
-    std::map<size_t, char_t> ret;
+  std::map<char_t, size_t> invert_group(group_t const& group) {
+    std::map<char_t, size_t> ret;
     for (size_t i = 0; i < group.size(); ++i)
-      ret[i] = group[i];
+      ret[group[i]] = i;
     return ret;
   }
 }
@@ -45,13 +47,20 @@ namespace Ciphey::caesar {
     return ret;
   }
 
-  void crypt(string_t& str, key_t const& key, group_t const& group) {
+  void decrypt(string_t& str, key_t const& key, group_t const& group) {
     auto inverse = invert_group(group);
 
-    for (auto& i : str)
+    auto inv_key = group.size() - key;
+
+    for (auto& i : str) {
       // Ignore letters we cannot find
-      if (auto iter = inverse.find(i); iter != inverse.end())
-        i = group[(i + key)%group.size()];
+      if (auto iter = inverse.find(i); iter != inverse.end()) {
+        i = group[(iter->second + inv_key)%group.size()];
+      }
+      else
+        continue;
+    }
+
   }
 }
 

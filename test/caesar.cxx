@@ -15,4 +15,6 @@ TEST(CipheyCore, caesar) {
   auto res = Ciphey::caesar::crack(probs, Ciphey::test::expected(), Ciphey::test::group(), test_string.size());
 
   ASSERT_EQ(res.key, 11);
+  Ciphey::caesar::decrypt(test_string, res.key, Ciphey::test::group());
+  ASSERT_EQ(test_string,"it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.");
 }

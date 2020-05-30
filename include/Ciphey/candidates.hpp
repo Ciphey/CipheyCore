@@ -8,17 +8,14 @@
 
 #include <cstdint>
 
-namespace Ciphey {
-  std::map<size_t, char_t> invert_group(group_t const&);
+#include <Ciphey/candidates.swig.hxx>
 
-  template<typename Key>
-  struct crack_results {
-    Key key;
-    prob_t p_value;
-  };
+namespace Ciphey {
+
+  std::map<char_t, size_t> invert_group(group_t const&);
 
   namespace caesar {
-    void crypt(std::u16string& str, key_t const& key, group_t const& group);
+    void decrypt(string_t& str, key_t const& key, group_t const& group);
 
     // If the p_value is set to one, we will keep going to try to maximise the p-value
     crack_results<key_t> crack(prob_table observed, prob_table const& expected, group_t const& group, freq_t count,

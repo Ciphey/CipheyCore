@@ -1,7 +1,7 @@
 %module CipheyCore
 
 %include std_basic_string.i
-%include std_string.i
+//%include std_string.i
 %include std_map.i
 %include std_vector.i
 %include std_shared_ptr.i
@@ -22,4 +22,10 @@ namespace std {
   %template(caesar_key_t) vector<size_t>;
   %template(analysis) shared_ptr<const Ciphey::simple_analysis_res>;
 }
+
+%include "Ciphey/candidates.swig.hxx"
 %include "Ciphey/swig.hpp"
+namespace Ciphey {
+  %template(caesar_results) crack_results<Ciphey::caesar::key_t>;
+  %template(vigenere_results) crack_results<Ciphey::vigenere::key_t>;
+}

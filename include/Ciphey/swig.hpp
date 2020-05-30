@@ -31,6 +31,11 @@ namespace Ciphey {
     return caesar::crack(in->probs, expected, group, in->val.length(), p_value);
   }
 
+  inline string_t caesar_decrypt(string_t str, Ciphey::caesar::key_t key, group_t group) {
+    caesar::decrypt(str, key, group);
+    return str;
+  }
+
   inline Ciphey::crack_results<Ciphey::vigenere::key_t> viginere_crack(string_t str,
                                                                        prob_table const& expected,
                                                                        group_t const& group, size_t key_length,
