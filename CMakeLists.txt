@@ -24,17 +24,25 @@ find_package(Python3 REQUIRED COMPONENTS Development)
 find_package(SWIG REQUIRED)
 
 include(${SWIG_USE_FILE})
-set(PYTHON_SWIG ${CMAKE_CURRENT_SOURCE_DIR}/swig/python.i)
+set(PYTHON_SWIG ${CMAKE_CURRENT_SOURCE_DIR}/py/python.i)
 set_property(SOURCE ${PYTHON_SWIG} PROPERTY CPLUSPLUS ON)
 set_property(SOURCE ${PYTHON_SWIG} PROPERTY USE_TARGET_INCLUDE_DIRECTORIES TRUE)
 swig_add_library(ciphey_core_py
   TYPE SHARED
   LANGUAGE python
+  OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}"
+  OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
   SOURCES ${PYTHON_SWIG})
 target_link_libraries(ciphey_core_py Ciphey::core Python3::Python)
-add_custom_command(TARGET ciphey_core_py POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/CipheyCore.py" "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
+add_custom_command(TARGET ciphey_core_py PRE_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
 )
+add_custom_command(TARGET ciphey_core_py POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/CipheyCore.py" "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/__init__.py"
+  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/py/pyproject.toml" "${CMAKE_CURRENT_BINARY_DIR}/"
+  COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:ciphey_core_py>"  "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/"
+)
+
 
 enable_testing()
 find_package(GTest REQUIRED)
