@@ -19,6 +19,7 @@ target_link_libraries(ciphey_core PUBLIC Boost::boost)
 
 add_library(Ciphey::core ALIAS ciphey_core)
 
+set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 find_package(Python3 REQUIRED COMPONENTS Development)
 find_package(SWIG REQUIRED)
 
@@ -30,7 +31,10 @@ swig_add_library(ciphey_core_py
   TYPE SHARED
   LANGUAGE python
   SOURCES ${PYTHON_SWIG})
-swig_link_libraries(ciphey_core_py Ciphey::core Python3::Python)
+target_link_libraries(ciphey_core_py Ciphey::core Python3::Python)
+add_custom_command(TARGET ciphey_core_py POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/CipheyCore.py" "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
+)
 
 enable_testing()
 find_package(GTest REQUIRED)
