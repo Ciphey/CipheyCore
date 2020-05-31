@@ -18,4 +18,5 @@ jobs:
         ninja
     - name: test
       run: |
+        cd build
         ninja test
