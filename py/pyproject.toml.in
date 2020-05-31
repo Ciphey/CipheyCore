@@ -6,7 +6,7 @@ authors = ["Cyclic3 <cyclic3.git@gmail.com>"]
 build = "build.py"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
