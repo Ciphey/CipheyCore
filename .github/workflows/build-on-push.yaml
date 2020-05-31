@@ -19,8 +19,6 @@ jobs:
         pip3 install poetry
     - name: Do build
       run: |
-        mkdir build && cd build
-        ls && pwd && ls ..
         cmake .. -GNinja
         ninja
     - name: Create python package
@@ -31,5 +29,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: linux64
-        path: build/dist
+        path: dist
 
