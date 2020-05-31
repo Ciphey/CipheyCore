@@ -33,7 +33,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: linux64
-        path: build/dist
+        path: build
 #  build-linux32:
 #    name: Build Linux32 package
 #    runs-on: ubuntu-latest
