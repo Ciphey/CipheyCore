@@ -1,20 +1,20 @@
 #include "gtest/gtest.h"
 
-#include <Ciphey/freq.hpp>
+#include <ciphey/freq.hpp>
 
-TEST(CipheyCore, chisq) {
-  auto res = 1 - Ciphey::chisq_cdf(13, 22.36);
+TEST(cipheyCore, chisq) {
+  auto res = 1 - ciphey::chisq_cdf(13, 22.36);
 
   ASSERT_LE(::abs(res - 0.05), 0.01);
 }
 
 
-TEST(CipheyCore, windowed_freq) {
-  Ciphey::string_t str = "abcadcabcabc1d3";
-  Ciphey::windowed_freq_table tab(3);
-  Ciphey::freq_analysis(tab, str);
+TEST(cipheyCore, windowed_freq) {
+  ciphey::string_t str = "abcadcabcabc1d3";
+  ciphey::windowed_freq_table tab(3);
+  ciphey::freq_analysis(tab, str);
 
-  Ciphey::windowed_freq_table true_table = {
+  ciphey::windowed_freq_table true_table = {
     {{'a', 4}, {'1', 1}},
     {{'b', 3}, {'d', 2}},
     {{'c', 4}, {'3', 1}},

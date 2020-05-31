@@ -1,10 +1,10 @@
-#include <Ciphey/freq.hpp>
+#include <ciphey/freq.hpp>
 
 #include <boost/math/special_functions/gamma.hpp>
 
 #include <set>
 
-namespace Ciphey {
+namespace ciphey {
   float_t run_chisq(assoc_table const& assoc, freq_t count) {
     prob_t chisq = 0;
 

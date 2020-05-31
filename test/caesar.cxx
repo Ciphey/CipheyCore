@@ -1,18 +1,18 @@
 #include "gtest/gtest.h"
 
-#include <Ciphey/candidates.hpp>
+#include <ciphey/candidates.hpp>
 #include "common.hpp"
 
-TEST(CipheyCore, caesar) {
-  Ciphey::string_t test_string = "te hld esp ozgpc czlo esle wlj, zy l qctolj ytrse wlep ty yzgpxmpc, mpqzcp esp qtcde zq esp apcdzyd htes hszx estd stdezcj sld mfdtypdd.";
-  Ciphey::freq_table freqs;
-  Ciphey::freq_analysis(freqs, test_string);
-  Ciphey::prob_table probs;
-  Ciphey::freq_conv(probs, freqs);
+TEST(cipheyCore, caesar) {
+  ciphey::string_t test_string = "te hld esp ozgpc czlo esle wlj, zy l qctolj ytrse wlep ty yzgpxmpc, mpqzcp esp qtcde zq esp apcdzyd htes hszx estd stdezcj sld mfdtypdd.";
+  ciphey::freq_table freqs;
+  ciphey::freq_analysis(freqs, test_string);
+  ciphey::prob_table probs;
+  ciphey::freq_conv(probs, freqs);
 
-  Ciphey::filter_missing(probs, Ciphey::test::expected());
+  ciphey::filter_missing(probs, ciphey::test::expected());
 
-  auto res_collection = Ciphey::caesar::crack(probs, Ciphey::test::expected(), Ciphey::test::group(), test_string.size());
+  auto res_collection = ciphey::caesar::crack(probs, ciphey::test::expected(), ciphey::test::group(), test_string.size());
   std::cerr << res_collection.size() << " options" << std::endl;
 
   for (size_t i = 0; i < res_collection.size(); ++i) {
@@ -25,6 +25,6 @@ TEST(CipheyCore, caesar) {
   found:
   auto& res = res_collection.front();
   ASSERT_EQ(res.key, 11);
-  Ciphey::caesar::decrypt(test_string, res.key, Ciphey::test::group());
+  ciphey::caesar::decrypt(test_string, res.key, ciphey::test::group());
   ASSERT_EQ(test_string,"it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.");
 }

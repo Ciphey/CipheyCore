@@ -1,6 +1,6 @@
-#include <Ciphey/candidates.hpp>
+#include <ciphey/candidates.hpp>
 
-#include <Ciphey/freq.hpp>
+#include <ciphey/freq.hpp>
 
 #include <algorithm>
 #include <atomic>
@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace Ciphey {
+namespace ciphey {
   inverse_group_t invert_group(group_t const& group) {
     inverse_group_t ret;
     for (size_t i = 0; i < group.size(); ++i)
@@ -19,7 +19,7 @@ namespace Ciphey {
   }
 }
 
-namespace Ciphey::caesar {
+namespace ciphey::caesar {
   void rotate_prob_table(prob_table& observed, group_t const& group) {
     auto iter = group.cbegin();
     while (true) {
@@ -58,7 +58,7 @@ namespace Ciphey::caesar {
   }
 }
 
-namespace Ciphey::vigenere {
+namespace ciphey::vigenere {
   // We use a shared_future so that a copy is unnecessary
   using intermediate_res_t = std::vector<std::shared_future<std::vector<crack_result<caesar::key_t>>>>;
 

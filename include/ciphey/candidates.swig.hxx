@@ -1,6 +1,6 @@
-#include <Ciphey/typedefs.hpp>
+#include <ciphey/typedefs.hpp>
 
-namespace Ciphey {
+namespace ciphey {
   template<typename Key>
   struct crack_result {
     Key key;

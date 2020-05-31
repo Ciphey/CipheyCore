@@ -1,6 +1,6 @@
-#include <Ciphey/candidates.hpp>
+#include <ciphey/candidates.hpp>
 
-namespace Ciphey {
+namespace ciphey {
   template<typename Iter, typename Core>
   Iter get_next_candidate(Iter begin, Iter end, bool(*c)(Iter const&)) {
     for (; begin != end; ++begin) {

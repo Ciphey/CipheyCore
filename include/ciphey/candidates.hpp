@@ -1,16 +1,16 @@
 #pragma once
 
-#include <Ciphey/freq.hpp>
-#include <Ciphey/typedefs.hpp>
+#include <ciphey/freq.hpp>
+#include <ciphey/typedefs.hpp>
 
 #include <string>
 #include <vector>
 
 #include <cstdint>
 
-#include <Ciphey/candidates.swig.hxx>
+#include <ciphey/candidates.swig.hxx>
 
-namespace Ciphey {
+namespace ciphey {
   constexpr prob_t default_p_value = 0.01;
 
   inverse_group_t invert_group(group_t const&);

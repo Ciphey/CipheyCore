@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Ciphey/candidates.hpp>
+#include <ciphey/candidates.hpp>
 
 #include <memory>
 
-namespace Ciphey {
+namespace ciphey {
   struct simple_analysis_res {
     freq_table freqs;
     prob_table probs;
@@ -19,7 +19,7 @@ namespace Ciphey {
     return ret;
   }
 
-  inline std::vector<Ciphey::crack_result<Ciphey::caesar::key_t>> caesar_crack(std::shared_ptr<const simple_analysis_res> in,
+  inline std::vector<ciphey::crack_result<ciphey::caesar::key_t>> caesar_crack(std::shared_ptr<const simple_analysis_res> in,
                                                                                prob_table expected, group_t group,
                                                                                bool do_filter_missing = true,
                                                                                prob_t p_value = default_p_value) {
@@ -32,12 +32,12 @@ namespace Ciphey {
     return caesar::crack(in->probs, expected, group, in->val.length(), p_value);
   }
 
-  inline string_t caesar_decrypt(string_t str, Ciphey::caesar::key_t key, group_t group) {
+  inline string_t caesar_decrypt(string_t str, ciphey::caesar::key_t key, group_t group) {
     caesar::decrypt(str, key, group);
     return str;
   }
 
-  inline std::vector<Ciphey::crack_result<Ciphey::vigenere::key_t>> vigenere_crack(string_t str,
+  inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(string_t str,
                                                                                    prob_table const& expected,
                                                                                    group_t const& group, size_t key_length,
                                                                                    bool do_filter_missing = true,
@@ -60,7 +60,7 @@ namespace Ciphey {
     return vigenere::crack(probs, expected, group, str.length(), p_value);
   }
 
-  inline string_t vigenere_decrypt(string_t str, Ciphey::vigenere::key_t key, group_t group) {
+  inline string_t vigenere_decrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
     vigenere::decrypt(str, key, group);
     return str;
   }

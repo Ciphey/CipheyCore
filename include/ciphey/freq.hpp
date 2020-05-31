@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Ciphey/typedefs.hpp>
+#include <ciphey/typedefs.hpp>
 
 #include <string>
 #include <map>
@@ -10,7 +10,7 @@
 #include <cmath>
 #include <cstdint>
 
-namespace Ciphey {
+namespace ciphey {
   struct assoc_table_elem { char_t name; prob_t observed; prob_t expected; };
   using assoc_table = std::vector<assoc_table_elem>;
 
