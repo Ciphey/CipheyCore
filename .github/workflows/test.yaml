@@ -1,4 +1,4 @@
-name: Release Build
+name: Tests
 on: [push]
 
 jobs:
@@ -9,10 +9,13 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install deps
       run: |
-        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig
+        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig googletest
         sudo pip3 install poetry auditwheel
     - name: Do build
       run: |
         mkdir build && cd build
-        cmake .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+        cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
         ninja
+    - name: test
+      run: |
+        ninja test
