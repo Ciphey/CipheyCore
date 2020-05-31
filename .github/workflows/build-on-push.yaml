@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install deps
       run: |
-        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 python3-pip
+        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 python3-pip python3-devel swig
         pip3 install poetry auditwheel
 #        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig
     - name: Do build
