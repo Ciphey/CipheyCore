@@ -1,0 +1,17 @@
+name: Release Build
+on: [push]
+
+jobs:
+  test:
+    name: Test the package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install deps
+      run: |
+        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig
+        sudo pip3 install poetry auditwheel
+    - name: Do build
+      run: |
+        mkdir build && cd build
+        cmake .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+        ninja
