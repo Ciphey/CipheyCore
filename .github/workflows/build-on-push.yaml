@@ -27,6 +27,7 @@ jobs:
       run: |
         cd build
         poetry build
+        auditwheel show dist/*.whl
         auditwheel repair dist/*.whl
     - name: Upload result
       uses: actions/upload-artifact@v2
