@@ -19,4 +19,4 @@ jobs:
     - name: test
       run: |
         cd build
-        ninja test
+        ctest
