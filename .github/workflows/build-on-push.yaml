@@ -1,22 +1,32 @@
 name: Release Build
-on:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
+on: push
+#on:
+#  push:
+#    branches:
+#    - master
+#  pull_request:
+#    branches:
+#    - master
 jobs:
   build-linux64:
     name: Build Linux64 package
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2014_x86_64
 
+    strategy:
+      matrix:
+        abi: ["cp35-cp35m", "cp36-cp36m", "cp37-cp37m", "cp38-cp38"]
+
     steps:
     - uses: actions/checkout@v2
     - name: Install deps
       run: |
-        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 python3-pip python3-devel swig3
+        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 swig3
+    - name: overlay hack
+      run: |
+        cp -r /opt/python/${{matrix.abi}}/* /usr
+    - name: pip deps
+      run: |
         pip3 install poetry auditwheel
     - name: Do build
       run: |
