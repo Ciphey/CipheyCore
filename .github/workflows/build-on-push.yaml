@@ -7,25 +7,6 @@ on:
     branches:
     - master
 jobs:
-  test:
-    name: Test the package
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install deps
-      run: |
-        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig libgtest-dev
-        sudo pip3 install poetry auditwheel
-    - name: Do build
-      run: |
-        mkdir build && cd build
-        cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
-        ninja
-    - name: Run tests
-      run: |
-        ninja test
-
-
   build-linux64:
     name: Build Linux64 package
     runs-on: ubuntu-latest
