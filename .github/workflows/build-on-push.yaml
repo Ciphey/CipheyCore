@@ -10,14 +10,16 @@ on: push
 jobs:
   build-linux64:
     name: Build Linux64 package
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
 
     steps:
     - uses: actions/checkout@v2
     - name: Install deps
       run: |
-        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig
+        sudo yum -y install cmake boost-devel ninja-build
         sudo pip3 install poetry auditwheel
+#        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig
     - name: Do build
       run: |
         mkdir build && cd build
