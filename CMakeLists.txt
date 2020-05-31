@@ -48,9 +48,10 @@ add_custom_command(TARGET ciphey_core_py POST_BUILD
 )
 
 
-option(CIPHEY_CORE_TEST ON)
+option(CIPHEY_CORE_TEST "Enable testing" ON)
 
 if (CIPHEY_CORE_TEST)
+  message("Testing enabled")
   enable_testing()
   find_package(GTest REQUIRED)
   include(GoogleTest)
