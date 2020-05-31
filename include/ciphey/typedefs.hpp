@@ -6,22 +6,22 @@
 #include <string>
 
 namespace ciphey {
-  using char_t = char;
-  using float_t = float;
-  using prob_t = float_t;
-  using freq_t = size_t;
+  typedef char char_t;
+  typedef float float_t;
+  typedef float_t prob_t;
+  typedef size_t freq_t;
 
-  using string_t = std::basic_string<char_t>;
+  typedef std::basic_string<char_t> string_t;
 
-  using freq_table = std::map<char_t, freq_t>;
-  using windowed_freq_table = std::vector<freq_table>;
-  using prob_table = std::map<char_t, prob_t>;
-  using windowed_prob_table = std::vector<prob_table>;
+  typedef std::map<char_t, freq_t> freq_table;
+  typedef std::vector<freq_table> windowed_freq_table;
+  typedef std::map<char_t, prob_t> prob_table;
+  typedef std::vector<prob_table> windowed_prob_table;
 
-  using group_t = std::vector<char_t>;
-  using inverse_group_t = std::map<char_t, size_t>;
+  typedef std::vector<char_t> group_t;
+  typedef std::map<char_t, size_t> inverse_group_t;
 
   namespace caesar {
-    using key_t = size_t;
+    typedef size_t key_t;
   }
 }
