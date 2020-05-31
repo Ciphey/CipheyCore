@@ -21,7 +21,17 @@ target_link_libraries(ciphey_core PUBLIC Boost::boost)
 add_library(Ciphey::core ALIAS ciphey_core)
 
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
-find_package(Python3 REQUIRED COMPONENTS Development)
+
+option(CIPHEY_PKGCONFIG "Force pkgconfig for python locating" OFF)
+if (CIPHEY_PKGCONFIG)
+  find_package(PkgConfig REQUIRED)
+  pkg_search_module(Python3 python3 REQUIRED)
+  set(PYTHON_LIB PkgConfig::Python3)
+else()
+  find_package(Python3 REQUIRED COMPONENTS Development)
+  set(PYTHON_LIB Python3::Python)
+endif()
+
 find_package(SWIG REQUIRED)
 
 include(${SWIG_USE_FILE})
@@ -34,7 +44,7 @@ swig_add_library(ciphey_core_py
   OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}"
   OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
   SOURCES ${PYTHON_SWIG})
-target_link_libraries(ciphey_core_py Ciphey::core Python3::Python)
+target_link_libraries(ciphey_core_py Ciphey::core ${PYTHON_LIB})
 add_custom_command(TARGET ciphey_core_py PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
 )

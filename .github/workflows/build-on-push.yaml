@@ -24,14 +24,14 @@ jobs:
         yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 swig3
     - name: overlay hack
       run: |
-        cp -r /opt/python/${{matrix.abi}}/* /usr
+        cp -r /opt/python/${{matrix.abi}}/lib/pkgconfig/python3.pc /usr/share/pkgconfig
     - name: pip deps
       run: |
         pip3 install poetry auditwheel
     - name: Do build
       run: |
         mkdir build && cd build
-        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF
+        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCIPHEY_PKGCONFIG=ON
         ninja
     - name: Create python package
       run: |
