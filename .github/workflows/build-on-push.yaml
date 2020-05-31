@@ -1,11 +1,11 @@
-name: Ciphey Core
-#on:
-#  push:
-#    branches:
-#    - master
-#  pull_request:
-#    branches:
-#    - master
+name: Release Build
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 jobs:
   test:
     name: Test the package
