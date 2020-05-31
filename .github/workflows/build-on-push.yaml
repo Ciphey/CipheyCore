@@ -9,7 +9,7 @@ on: push
 #    - master
 jobs:
   build-linux64:
-    name: Builds a Linux64 package
+    name: Build Linux64 package
     runs-on: ubuntu-16.04
 
     steps:
@@ -20,6 +20,7 @@ jobs:
     - name: Do build
       run: |
         mkdir build && cd build
+        ls && pwd && ls ..
         cmake .. -GNinja
         ninja
     - name: Create python package
@@ -29,5 +30,6 @@ jobs:
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:
+        name: linux64
         path: build/dist
 
