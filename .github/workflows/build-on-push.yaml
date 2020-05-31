@@ -34,32 +34,32 @@ jobs:
       with:
         name: linux64
         path: build/dist
-  build-linux32:
-    name: Build Linux64 package
-    runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_i686
+#  build-linux32:
+#    name: Build Linux32 package
+#    runs-on: ubuntu-latest
+#    container: quay.io/pypa/manylinux2014_i686
 
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install deps
-      run: |
-        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 python3-pip python3-devel swig3
-        pip3 install poetry auditwheel
-#        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig
-    - name: Do build
-      run: |
-        mkdir build && cd build
-        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF
-        ninja
-    - name: Create python package
-      run: |
-        cd build
-        poetry build
-        auditwheel show dist/*.whl
-        auditwheel repair dist/*.whl
-    - name: Upload result
-      uses: actions/upload-artifact@v2
-      with:
-        name: linux64
-        path: build/dist
+#    steps:
+#    - uses: actions/checkout@v2
+#    - name: Install deps
+#      run: |
+#        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 python3-pip python3-devel swig3
+#        pip3 install poetry auditwheel
+##        sudo apt-get install -y cmake clang-4.0 libboost-math-dev ninja-build python3 python3-pip python3-setuptools python3-venv swig
+#    - name: Do build
+#      run: |
+#        mkdir build && cd build
+#        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF
+#        ninja
+#    - name: Create python package
+#      run: |
+#        cd build
+#        poetry build
+#        auditwheel show dist/*.whl
+#        auditwheel repair dist/*.whl
+#    - name: Upload result
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: linux64
+#        path: build/dist
 
