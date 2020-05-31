@@ -24,7 +24,7 @@ jobs:
         cmake .. -GNinja -DCIPHEY_CORE_TEST=OFF
         ninja
     - name: Create python package
-      run:
+      run: |
         cd build
         poetry build
     - name: Upload result
