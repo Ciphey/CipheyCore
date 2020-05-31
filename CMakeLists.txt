@@ -48,10 +48,14 @@ add_custom_command(TARGET ciphey_core_py POST_BUILD
 )
 
 
-enable_testing()
-find_package(GTest REQUIRED)
-include(GoogleTest)
-file(GLOB_RECURSE ciphey_core_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
-add_executable(ciphey_core_test ${ciphey_core_TESTS})
-target_link_libraries(ciphey_core_test Ciphey::core GTest::GTest GTest::Main)
-gtest_discover_tests(ciphey_core_test)
+option(CIPHEY_CORE_TEST ON)
+
+if (CIPHEY_CORE_TEST)
+  enable_testing()
+  find_package(GTest REQUIRED)
+  include(GoogleTest)
+  file(GLOB_RECURSE ciphey_core_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
+  add_executable(ciphey_core_test ${ciphey_core_TESTS})
+  target_link_libraries(ciphey_core_test Ciphey::core GTest::GTest GTest::Main)
+  gtest_discover_tests(ciphey_core_test)
+endif()
