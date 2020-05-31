@@ -1,4 +1,4 @@
-%module CipheyCore
+%module cipheycore
 
 %include std_basic_string.i
 //%include std_string.i
@@ -9,27 +9,27 @@
 %{
 #include <map>
   #define SWIG_FILE_WITH_INIT
-  #include "Ciphey/typedefs.hpp"
-  #include "Ciphey/swig.hpp"
+  #include "ciphey/typedefs.hpp"
+  #include "ciphey/swig.hpp"
 %}
 
-%include "Ciphey/typedefs.hpp"
+%include "ciphey/typedefs.hpp"
 
 namespace std {
-  %template(freq_table) map<Ciphey::char_t, Ciphey::freq_t>;
-  %template(prob_table) map<Ciphey::char_t, Ciphey::prob_t>;
-  %template(group_t) vector<Ciphey::char_t>;
+  %template(freq_table) map<ciphey::char_t, ciphey::freq_t>;
+  %template(prob_table) map<ciphey::char_t, ciphey::prob_t>;
+  %template(group_t) vector<ciphey::char_t>;
   %template(caesar_key_t) vector<size_t>;
-  %template(analysis) shared_ptr<const Ciphey::simple_analysis_res>;
+  %template(analysis) shared_ptr<const ciphey::simple_analysis_res>;
 }
 
-%include "Ciphey/candidates.swig.hxx"
-%include "Ciphey/swig.hpp"
-namespace Ciphey {
-  %template(caesar_results_elem) crack_result<Ciphey::caesar::key_t>;
-  %template(vigenere_results_elem) crack_result<Ciphey::vigenere::key_t>;
+%include "ciphey/candidates.swig.hxx"
+%include "ciphey/swig.hpp"
+namespace ciphey {
+  %template(caesar_results_elem) crack_result<ciphey::caesar::key_t>;
+  %template(vigenere_results_elem) crack_result<ciphey::vigenere::key_t>;
 }
 namespace std {
-  %template(caesar_results) vector<Ciphey::crack_result<Ciphey::caesar::key_t>>;
-  %template(vigenere_results) vector<Ciphey::crack_result<Ciphey::vigenere::key_t>>;
+  %template(caesar_results) vector<ciphey::crack_result<ciphey::caesar::key_t>>;
+  %template(vigenere_results) vector<ciphey::crack_result<ciphey::vigenere::key_t>>;
 }

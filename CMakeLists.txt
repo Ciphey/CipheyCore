@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(CipheyCore)
+project(CipheyCore VERSION 0.0.2)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -12,6 +12,7 @@ target_include_directories(ciphey_core PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
+include_directories(subboost)
 
 target_compile_features(ciphey_core PUBLIC cxx_std_17)
 
@@ -37,9 +38,12 @@ target_link_libraries(ciphey_core_py Ciphey::core Python3::Python)
 add_custom_command(TARGET ciphey_core_py PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/py/pyproject.toml.in ${CMAKE_CURRENT_BINARY_DIR}/pyproject.toml)
+
 add_custom_command(TARGET ciphey_core_py POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/CipheyCore.py" "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/__init__.py"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/py/pyproject.toml" "${CMAKE_CURRENT_BINARY_DIR}/"
+  COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/cipheycore.py" "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/__init__.py"
+  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/py/build.py" "${CMAKE_CURRENT_BINARY_DIR}/"
   COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:ciphey_core_py>"  "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/"
 )
 

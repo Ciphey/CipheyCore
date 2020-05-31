@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-namespace Ciphey {
+namespace ciphey {
   using char_t = char;
   using float_t = float;
   using prob_t = float_t;

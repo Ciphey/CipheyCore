@@ -1,8 +1,9 @@
 [tool.poetry]
 name = "cipheycore"
-version = "0.0.1"
+version = "@CMAKE_PROJECT_VERSION@"
 description = ""
 authors = ["Cyclic3 <cyclic3.git@gmail.com>"]
+build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -11,5 +12,5 @@ python = "^3.8"
 pytest = "^4.6"
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=0.12", "setuptools-cpp"]
 build-backend = "poetry.masonry.api"

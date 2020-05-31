@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Ciphey/candidates.hpp>
+#include <ciphey/candidates.hpp>
 
-namespace Ciphey::test {
-  inline Ciphey::prob_table expected() { return {
+namespace ciphey::test {
+  inline ciphey::prob_table expected() { return {
     { 'e', 0.12702 },
     { 't', 0.09056 },
     { 'a', 0.08167 },
@@ -32,7 +32,7 @@ namespace Ciphey::test {
     { 'z', 0.00074 },
   }; }
 
-  inline Ciphey::group_t group() { return {
+  inline ciphey::group_t group() { return {
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
     'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
     'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
