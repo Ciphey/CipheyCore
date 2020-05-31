@@ -24,10 +24,11 @@ jobs:
         yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 swig3
     - name: overlay hack
       run: |
-        cp -r /opt/python/${{matrix.abi}}/lib/pkgconfig/python3.pc /usr/share/pkgconfig
+        cp /opt/python/${{matrix.abi}}/lib/pkgconfig/python*.pc /usr/share/pkgconfig
+        cp -rn /opt/python/${{matrix.abi}}/bin/* /usr/bin
     - name: pip deps
       run: |
-        pip3 install poetry auditwheel
+        pip3 install poetry auditwheel setuptools
     - name: Do build
       run: |
         mkdir build && cd build
@@ -36,9 +37,9 @@ jobs:
     - name: Create python package
       run: |
         cd build
-        poetry build
-        auditwheel show dist/*.whl
-        auditwheel repair dist/*.whl
+        python3 -m poetry build
+        python3 -m auditwheel show dist/*.whl
+        python3 -m auditwheel repair dist/*.whl
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:
