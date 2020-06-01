@@ -26,9 +26,10 @@ add_library(Ciphey::core ALIAS ciphey_core)
 
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
-option(CIPHEY_PYTHON_HEADERS "Force pkgconfig for python locating")
-if (CIPHEY_PYTHON_HEADERS)
-  include_directories(${CIPHEY_PYTHON_HEADERS})
+option(CIPHEY_CORE_PYTHON "Force including (and linking if necessary) from the python installation in the given directory")
+if (CIPHEY_CORE_PYTHON)
+  include_directories("${CIPHEY_CORE_PYTHON}/include")
+  link_directories("${CIPHEY_CORE_PYTHON}/libs")
 else()
   find_package(Python3 REQUIRED COMPONENTS Development)
   include_directories(${Python3_INCLUDE_DIRS})
@@ -58,7 +59,6 @@ add_custom_command(TARGET ciphey_core_py POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/py/build.py" "${CMAKE_CURRENT_BINARY_DIR}/"
   COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:ciphey_core_py>"  "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/"
 )
-
 
 option(CIPHEY_CORE_TEST "Enable testing" ON)
 

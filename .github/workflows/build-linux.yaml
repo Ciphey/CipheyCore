@@ -31,7 +31,7 @@ jobs:
     - name: Do build
       run: |
         mkdir build && cd build
-        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCIPHEY_PYTHON_HEADERS=/opt/python_headers
+        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCIPHEY_CORE_PYTHON=/opt/python_headers -DCMAKE_BUILD_TYPE=Release
         cmake3 --build .
     - name: Create python package
       run: |
