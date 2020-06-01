@@ -1,4 +1,4 @@
-name: Release Build
+name: Linux Release Build
 on:
   push:
     branches:
@@ -12,23 +12,34 @@ jobs:
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2014_x86_64
 
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: ["cp35-cp35m", "cp36-cp36m", "cp37-cp37m", "cp38-cp38"]
+
     steps:
     - uses: actions/checkout@v2
     - name: Install deps
       run: |
-        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 python3-pip python3-devel swig3
-        pip3 install poetry auditwheel
+        yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 swig3
+    - name: overlay hack
+      run: |
+        ln -s /opt/python/${{matrix.abi}}/include/python*/ /opt/python_headers
+        cp -rn /opt/python/${{matrix.abi}}/bin/* /usr/bin
+    - name: pip deps
+      run: |
+        python3 -m pip install poetry auditwheel setuptools
     - name: Do build
       run: |
         mkdir build && cd build
-        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF
-        ninja
+        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCIPHEY_CORE_PYTHON=/opt/python_headers -DCMAKE_BUILD_TYPE=Release
+        cmake3 --build .
     - name: Create python package
       run: |
         cd build
-        poetry build
-        auditwheel show dist/*.whl
-        auditwheel repair dist/*.whl
+        python3 -m poetry build
+        python3 -m auditwheel show dist/*.whl
+        python3 -m auditwheel repair dist/*.whl
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:

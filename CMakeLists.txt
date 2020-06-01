@@ -14,14 +14,32 @@ target_include_directories(ciphey_core PUBLIC
 )
 include_directories(subboost)
 
-target_compile_features(ciphey_core PUBLIC cxx_std_17)
+if (MSVC)
+  target_compile_options(ciphey_core PUBLIC "/std:c++latest")
+else()
+  target_compile_features(ciphey_core PUBLIC cxx_std_20)
+endif()
 
 target_link_libraries(ciphey_core PUBLIC Boost::boost)
 
 add_library(Ciphey::core ALIAS ciphey_core)
 
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
-find_package(Python3 REQUIRED COMPONENTS Development)
+
+option(CIPHEY_CORE_PYTHON "Force including (and linking if necessary) from the python installation in the given directory")
+if (CIPHEY_CORE_PYTHON)
+  file(GLOB has_include_dir "${CIPHEY_CORE_PYTHON}")
+  if (EXISTS "${CIPHEY_CORE_PYTHON}/include/")
+    include_directories("${CIPHEY_CORE_PYTHON}/include")
+    link_directories("${CIPHEY_CORE_PYTHON}/libs")
+  else()
+    include_directories(${CIPHEY_CORE_PYTHON})
+  endif()
+else()
+  find_package(Python3 REQUIRED COMPONENTS Development)
+  include_directories(${Python3_INCLUDE_DIRS})
+endif()
+
 find_package(SWIG REQUIRED)
 
 include(${SWIG_USE_FILE})
@@ -34,7 +52,7 @@ swig_add_library(ciphey_core_py
   OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}"
   OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
   SOURCES ${PYTHON_SWIG})
-target_link_libraries(ciphey_core_py Ciphey::core Python3::Python)
+target_link_libraries(ciphey_core_py Ciphey::core)
 add_custom_command(TARGET ciphey_core_py PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
 )
@@ -46,7 +64,6 @@ add_custom_command(TARGET ciphey_core_py POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/py/build.py" "${CMAKE_CURRENT_BINARY_DIR}/"
   COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:ciphey_core_py>"  "${CMAKE_CURRENT_BINARY_DIR}/cipheycore/"
 )
-
 
 option(CIPHEY_CORE_TEST "Enable testing" ON)
 
