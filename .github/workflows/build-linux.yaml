@@ -28,12 +28,12 @@ jobs:
         cp -rn /opt/python/${{matrix.abi}}/bin/* /usr/bin
     - name: pip deps
       run: |
-        pip3 install poetry auditwheel setuptools
+        python3 -m pip install poetry auditwheel setuptools
     - name: Do build
       run: |
         mkdir build && cd build
         cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCIPHEY_PYTHON_HEADERS=/opt/python_headers
-        ninja
+        cmake3 --build .
     - name: Create python package
       run: |
         cd build
