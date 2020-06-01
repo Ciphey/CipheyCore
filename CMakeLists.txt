@@ -28,8 +28,13 @@ set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
 option(CIPHEY_CORE_PYTHON "Force including (and linking if necessary) from the python installation in the given directory")
 if (CIPHEY_CORE_PYTHON)
-  file(GLOB has_include_dir "${CIPHEY_CORE_PYTHON}")
-  if (EXISTS "${CIPHEY_CORE_PYTHON}/include/")
+  if (APPLE)
+
+    file(GLOB python_include "${CIPHEY_CORE_PYTHON}/include/python*")
+    file(GLOB python_lib "${CIPHEY_CORE_PYTHON}/lib/libpython*.dylib")
+    include_directories(${python_include})
+    set(ciphey_py_extra ${python_lib})
+  elseif (EXISTS "${CIPHEY_CORE_PYTHON}/include/")
     include_directories("${CIPHEY_CORE_PYTHON}/include")
     link_directories("${CIPHEY_CORE_PYTHON}/libs")
   else()
@@ -52,7 +57,7 @@ swig_add_library(ciphey_core_py
   OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}"
   OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
   SOURCES ${PYTHON_SWIG})
-target_link_libraries(ciphey_core_py Ciphey::core)
+target_link_libraries(ciphey_core_py Ciphey::core ${ciphey_py_extra})
 add_custom_command(TARGET ciphey_core_py PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
 )
