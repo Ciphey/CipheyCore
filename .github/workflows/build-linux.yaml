@@ -1,4 +1,4 @@
-name: Release Build
+name: Linux Release Build
 on: push
 #on:
 #  push:
@@ -24,7 +24,7 @@ jobs:
         yum -y install cmake3 boost-devel ninja-build llvm-toolset-7 swig3
     - name: overlay hack
       run: |
-        cp /opt/python/${{matrix.abi}}/lib/pkgconfig/python*.pc /usr/share/pkgconfig
+        ln -s /opt/python/${{matrix.abi}}/include/python*/ /opt/python_headers
         cp -rn /opt/python/${{matrix.abi}}/bin/* /usr/bin
     - name: pip deps
       run: |
@@ -32,7 +32,7 @@ jobs:
     - name: Do build
       run: |
         mkdir build && cd build
-        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCIPHEY_PKGCONFIG=ON
+        cmake3 .. -GNinja -DCIPHEY_CORE_TEST=OFF -DCIPHEY_PYTHON_HEADERS=/opt/python_headers
         ninja
     - name: Create python package
       run: |

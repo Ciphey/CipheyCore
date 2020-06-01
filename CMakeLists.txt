@@ -22,15 +22,11 @@ add_library(Ciphey::core ALIAS ciphey_core)
 
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
-option(CIPHEY_PKGCONFIG "Force pkgconfig for python locating" OFF)
-if (CIPHEY_PKGCONFIG)
-  find_package(PkgConfig REQUIRED)
-  pkg_search_module(Python3 python3 REQUIRED IMPORTED_TARGET)
-  #set(PYTHON_LIB PkgConfig::Python3)
-  include_directories(${Python3_INCLUDE_DIRS})
+option(CIPHEY_PYTHON_HEADERS "Force pkgconfig for python locating")
+if (CIPHEY_PYTHON_HEADERS)
+  include_directories(${CIPHEY_PYTHON_HEADERS})
 else()
   find_package(Python3 REQUIRED COMPONENTS Development)
-  #set(PYTHON_LIB Python3::Python)
   include_directories(${Python3_INCLUDE_DIRS})
 endif()
 
@@ -46,7 +42,7 @@ swig_add_library(ciphey_core_py
   OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}"
   OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
   SOURCES ${PYTHON_SWIG})
-target_link_libraries(ciphey_core_py Ciphey::core ${PYTHON_LIB})
+target_link_libraries(ciphey_core_py Ciphey::core)
 add_custom_command(TARGET ciphey_core_py PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
 )
