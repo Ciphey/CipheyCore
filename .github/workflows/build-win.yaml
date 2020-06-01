@@ -18,24 +18,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: recon
+    - name: vars
+      shell: cmd
       run: |
-        tree /A /F C:\hostedtoolcache\windows\Python
-        fail_command
-    - name: pip deps
+        echo Using boost %BOOST_ROOT_1_72_0%
+    - name: deps
       run: |
-        python3 -m pip install poetry auditwheel setuptools
-    - name: Do build
+        choco install swig -y
+        C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64\python -m pip install poetry auditwheel setuptools
+    - name: Do build    
+      shell: cmd
       run: |
         mkdir build && cd build
-        cmake .. -DCIPHEY_CORE_TEST=OFF -DCIPHEY_PYTHON_HEADERS=/opt/python_headers
-        cmake --build
+        cmake .. -DCIPHEY_CORE_TEST=OFF -DCIPHEY_PYTHON_HEADERS=C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64\include -DBOOST_ROOT=%BOOST_ROOT_1_72_0%
+        cmake --build .
     - name: Create python package
       run: |
         cd build
-        python3 -m poetry build
-        python3 -m auditwheel show dist/*.whl
-        python3 -m auditwheel repair dist/*.whl
+        C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64\python -m poetry build
+        C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64\python -m auditwheel show dist/*.whl
+        C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64\python -m auditwheel repair dist/*.whl
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:

@@ -11,7 +11,7 @@
 #include <ciphey/candidates.swig.hxx>
 
 namespace ciphey {
-  constexpr prob_t default_p_value = 0.01;
+  constexpr prob_t default_p_value = 0.01f;
 
   inverse_group_t invert_group(group_t const&);
 

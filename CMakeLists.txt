@@ -14,7 +14,11 @@ target_include_directories(ciphey_core PUBLIC
 )
 include_directories(subboost)
 
-target_compile_features(ciphey_core PUBLIC cxx_std_17)
+if (MSVC)
+  target_compile_options(ciphey_core PUBLIC "/std:c++latest")
+else()
+  target_compile_features(ciphey_core PUBLIC cxx_std_20)
+endif()
 
 target_link_libraries(ciphey_core PUBLIC Boost::boost)
 
