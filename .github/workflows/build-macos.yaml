@@ -1,12 +1,11 @@
 name: MacOS Release Build
-on: [push]
-#on:
-#  push:
-#    branches:
-#    - master
-#  pull_request:
-#    branches:
-#    - master
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 jobs:
   build-win64:
     name: Build MacOS package
@@ -40,5 +39,5 @@ jobs:
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:
-        name: win64
+        name: macos
         path: build
