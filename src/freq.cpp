@@ -37,7 +37,7 @@ namespace ciphey {
     if (stat == std::numeric_limits<float_t>::infinity())
       return 0;
     // We want the upper tail
-    auto p_value = 1 - chisq_cdf(count - 1, stat);
+    auto p_value = 1 - chisq_cdf(assoc.size() - 1, stat);
     return p_value;
   }
 
