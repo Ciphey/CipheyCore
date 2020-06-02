@@ -24,7 +24,7 @@ jobs:
         brew install python@${{matrix.ver}} boost swig
     - name: Python3 pip deps
       run: |
-        python3 -m pip install poetry setuptools
+        /usr/local/Cellar/python@3*/*/Frameworks/Python.framework/Versions/3*/bin/python3 -m pip install poetry setuptools
     - name: Do build    
       run: |
         mkdir build && cd build
@@ -35,7 +35,7 @@ jobs:
     - name: Create python package
       run: |
         cd build
-        python3 -m poetry build
+        /usr/local/Cellar/python@3*/*/Frameworks/Python.framework/Versions/3*/bin/python3 -m poetry build
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:
