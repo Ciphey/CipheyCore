@@ -31,8 +31,6 @@ namespace ciphey {
   }
 
   namespace vigenere {
-    /// A sequence of offsets
-    using key_t = std::vector<size_t>;
     void decrypt(string_t& str, key_t const& key, group_t const& group);
 
     std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,

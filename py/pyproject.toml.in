@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cipheycore"
-version = "@CMAKE_PROJECT_VERSION@"
+version = "@CIPHEY_VERSION@"
 description = ""
 authors = ["Cyclic3 <cyclic3.git@gmail.com>"]
 build = "build.py"

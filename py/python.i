@@ -19,7 +19,7 @@ namespace std {
   %template(freq_table) map<ciphey::char_t, ciphey::freq_t>;
   %template(prob_table) map<ciphey::char_t, ciphey::prob_t>;
   %template(group_t) vector<ciphey::char_t>;
-  %template(caesar_key_t) vector<size_t>;
+  %template(viginere_key_t) vector<size_t>;
   %template(analysis) shared_ptr<const ciphey::simple_analysis_res>;
 }
 

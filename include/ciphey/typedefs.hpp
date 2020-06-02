@@ -24,4 +24,9 @@ namespace ciphey {
   namespace caesar {
     using key_t = size_t;
   }
+
+  namespace vigenere {
+    /// A sequence of offsets
+    using key_t = std::vector<size_t>;
+  }
 }

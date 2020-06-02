@@ -19,6 +19,20 @@ namespace ciphey {
     return ret;
   }
 
+  inline prob_t chisq_test(std::shared_ptr<const simple_analysis_res> in, prob_table expected,
+                           bool do_filter_missing = true, prob_t p_value = default_p_value) {
+    assoc_table tab;
+    if (do_filter_missing) {
+      auto cpy = in->probs;
+      filter_missing(cpy, expected);
+      tab = create_assoc_table(cpy, expected);
+    }
+    else
+      tab = create_assoc_table(in->probs, expected);
+    return gof_chisq(tab, in->val.size());
+
+  }
+
   inline std::vector<ciphey::crack_result<ciphey::caesar::key_t>> caesar_crack(std::shared_ptr<const simple_analysis_res> in,
                                                                                prob_table expected, group_t group,
                                                                                bool do_filter_missing = true,

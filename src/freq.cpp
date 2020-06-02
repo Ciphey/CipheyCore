@@ -81,10 +81,9 @@ namespace ciphey {
 
   void filter_missing(prob_table& target, prob_table const& lookup) {
     std::vector<char_t> to_remove;
-    for (auto& i : target) {
-      if (!lookup.count(i.first))
+    for (auto& i : target)
+      if (auto iter = lookup.find(i.first); iter == lookup.end() || iter->second == 0)
         to_remove.push_back(i.first);
-    }
 
     for (auto i : to_remove)
       target.erase(i);

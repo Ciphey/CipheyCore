@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(CipheyCore VERSION 0.1.1)
+project(CipheyCore VERSION 0.1.3)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -62,6 +62,11 @@ add_custom_command(TARGET ciphey_core_py PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
 )
 
+if (PROJECT_VERSION_TWEAK)
+  set(CIPHEY_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-rc${PROJECT_VERSION_TWEAK}")
+else()
+  set(CIPHEY_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/py/pyproject.toml.in ${CMAKE_CURRENT_BINARY_DIR}/pyproject.toml)
 
 add_custom_command(TARGET ciphey_core_py POST_BUILD
