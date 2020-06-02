@@ -15,6 +15,11 @@ namespace ciphey {
 
   inverse_group_t invert_group(group_t const&);
 
+  template<typename Key>
+  void sort_crack_result(std::vector<crack_result<Key>>& vec) {
+    std::sort(vec.begin(), vec.end(), [](crack_result<Key>& a, crack_result<Key>& b) { return a.p_value > b.p_value; });
+  }
+
   namespace caesar {
     void decrypt(string_t& str, key_t const& key, group_t const& group);
 

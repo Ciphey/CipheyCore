@@ -42,7 +42,7 @@ namespace ciphey::caesar {
       if (auto key_p_value = gof_chisq(create_assoc_table(observed, expected), group.size() - 1); key_p_value > p_value)
         ret.push_back({.key = key, .p_value = key_p_value });
 
-    std::sort(ret.begin(), ret.end(), [](crack_result<key_t>& a, crack_result<key_t>& b) { return a.p_value > b.p_value; });
+    sort_crack_result(ret);
 
     return ret;
   }
@@ -107,8 +107,7 @@ namespace ciphey::vigenere {
     std::vector<crack_result<caesar::key_t> const*> indexes(observed.size() - 1);
     reduce(ret, imdt, p_value, indexes);
     // Now we can sort by p-value
-    std::sort(ret.begin(), ret.end(), [](crack_result<key_t>& a, crack_result<key_t>& b) { return a.p_value > b.p_value; });
-
+    sort_crack_result(ret);
     return ret;
   }
 
