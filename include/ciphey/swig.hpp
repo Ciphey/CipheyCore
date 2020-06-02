@@ -20,7 +20,7 @@ namespace ciphey {
   }
 
   inline prob_t chisq_test(std::shared_ptr<const simple_analysis_res> in, prob_table expected,
-                           bool do_filter_missing = true, prob_t p_value = default_p_value) {
+                           bool do_filter_missing = true) {
     assoc_table tab;
     if (do_filter_missing) {
       auto cpy = in->probs;

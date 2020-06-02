@@ -18,7 +18,7 @@ namespace ciphey {
   float_t chisq_cdf(freq_t dof, float_t up_to);
   /// Goodness-of-fit test
   ///
-  /// @returns the probability that, given the real distribution is the expected one, something at least this uncorrellated arises
+  /// @returns the probability that, given the real distribution is the expected one, something at least this uncorrelated arises
   prob_t gof_chisq(assoc_table const& assoc, freq_t count);
 
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected);
