@@ -2,7 +2,6 @@
 
 #include <ciphey/freq.hpp>
 
-#include <algorithm>
 #include <atomic>
 #include <future>
 #include <thread>
