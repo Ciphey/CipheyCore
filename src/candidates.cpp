@@ -42,6 +42,8 @@ namespace ciphey::caesar {
       if (auto key_p_value = gof_chisq(create_assoc_table(observed, expected), group.size() - 1); key_p_value > p_value)
         ret.push_back({.key = key, .p_value = key_p_value });
 
+    std::sort(ret.begin(), ret.end(), [](crack_result<key_t>& a, crack_result<key_t>& b) { return a.p_value > b.p_value; });
+
     return ret;
   }
 
