@@ -2,6 +2,8 @@
 
 #include <ciphey/freq.hpp>
 
+#include "common.hpp"
+
 TEST(cipheyCore, chisq) {
   auto res = 1 - ciphey::chisq_cdf(13, 22.36);
 

@@ -2,6 +2,7 @@
 
 #include <boost/math/special_functions/gamma.hpp>
 
+#include <random>
 #include <set>
 
 namespace ciphey {
@@ -105,5 +106,35 @@ namespace ciphey {
       }
     }
   }
+
+string_t generate_fuzz(prob_table const& tab, size_t len) {
+  string_t ret;
+  ret.resize(len);
+  std::mt19937 rng;
+
+  {
+    thread_local std::random_device seed_rng;
+    thread_local std::uniform_int_distribution<decltype(rng)::result_type> seed_dist;
+    rng.seed(seed_dist(seed_rng));
+  }
+
+  thread_local std::uniform_real_distribution<float_t> dist{0, 1};
+
+  for (auto& rand_char : ret) {
+    float_t stat = dist(rng);
+    // Iterate through the table, removing the probabilities until we are within a bracket
+    for (auto const& i : tab) {
+      if ((stat -= i.second) <= 0) {
+        rand_char = i.first;
+        goto next_char;
+      }
+    }
+    // This should not happen in normal usage!
+    throw std::logic_error("Probability distribution exceeded!");
+    next_char: {}
+  }
+
+  return ret;
+}
 }
 

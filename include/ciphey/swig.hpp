@@ -8,18 +8,36 @@ namespace ciphey {
   struct simple_analysis_res {
     freq_table freqs;
     prob_table probs;
-    string_t val;
+    freq_t len = 0;
   };
 
-  inline std::shared_ptr<const simple_analysis_res> analyse_string(string_t str) {
+  inline std::shared_ptr<simple_analysis_res> analyse_string(string_t str) {
     auto ret = std::make_shared<simple_analysis_res>();
-    ret->val = std::move(str);
-    freq_analysis(ret->freqs, ret->val);
+    ret->len = str.size();
+    freq_analysis(ret->freqs, str);
     freq_conv(ret->probs, ret->freqs);
     return ret;
   }
 
-  inline prob_t chisq_test(std::shared_ptr<const simple_analysis_res> in, prob_table expected,
+  inline std::shared_ptr<simple_analysis_res> start_analysis() {
+    return std::make_shared<simple_analysis_res>();
+  }
+
+  inline void continue_analysis(std::shared_ptr<simple_analysis_res> target, string_t str) {
+    target->len += str.size();
+    freq_analysis(target->freqs, str);
+  }
+
+  inline void finish_analysis(std::shared_ptr<simple_analysis_res> target) {
+    freq_conv(target->probs, target->freqs);
+  }
+
+  // TODO: add noise param
+  inline string_t fuzz(std::shared_ptr<simple_analysis_res> const& tab, size_t len) {
+    return generate_fuzz(tab->probs, len);
+  }
+
+  inline prob_t chisq_test(std::shared_ptr<simple_analysis_res> in, prob_table expected,
                            bool do_filter_missing = true) {
     assoc_table tab;
     if (do_filter_missing) {
@@ -29,21 +47,20 @@ namespace ciphey {
     }
     else
       tab = create_assoc_table(in->probs, expected);
-    return gof_chisq(tab, in->val.size());
-
+    return gof_chisq(tab, in->len);
   }
 
-  inline std::vector<ciphey::crack_result<ciphey::caesar::key_t>> caesar_crack(std::shared_ptr<const simple_analysis_res> in,
+  inline std::vector<ciphey::crack_result<ciphey::caesar::key_t>> caesar_crack(std::shared_ptr<simple_analysis_res> in,
                                                                                prob_table expected, group_t group,
                                                                                bool do_filter_missing = true,
                                                                                prob_t p_value = default_p_value) {
     if (do_filter_missing) {
       prob_table tab = in->probs;
       filter_missing(tab, expected);
-      return caesar::crack(std::move(tab), expected, group, in->val.length(), p_value);
+      return caesar::crack(std::move(tab), expected, group, in->len, p_value);
     }
 
-    return caesar::crack(in->probs, expected, group, in->val.length(), p_value);
+    return caesar::crack(in->probs, expected, group, in->len, p_value);
   }
 
   inline string_t caesar_decrypt(string_t str, ciphey::caesar::key_t key, group_t group) {
