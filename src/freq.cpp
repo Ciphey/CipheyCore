@@ -121,6 +121,7 @@ string_t generate_fuzz(prob_table const& tab, size_t len) {
   thread_local std::uniform_real_distribution<float_t> dist{0, 1};
 
   for (auto& rand_char : ret) {
+  restat_char:
     float_t stat = dist(rng);
     // Iterate through the table, removing the probabilities until we are within a bracket
     for (auto const& i : tab) {
@@ -130,7 +131,9 @@ string_t generate_fuzz(prob_table const& tab, size_t len) {
       }
     }
     // This should not happen in normal usage!
-    throw std::logic_error("Probability distribution exceeded!");
+    //
+    // However, floats do weird things with rounding, so we will be leniant
+    goto restat_char;
     next_char: {}
   }
 
