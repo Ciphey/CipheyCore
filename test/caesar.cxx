@@ -49,7 +49,10 @@ TEST(cipheyCore, caesar) {
     }
     EXPECT_TRUE(false) << "Key was not found";
     found:
+    auto tmp_ctext = test.ctext;
     ciphey::caesar::decrypt(test.ctext, test.key, ciphey::test::group());
     EXPECT_EQ(test.ctext, test.ptext);
+    ciphey::caesar::encrypt(test.ctext, test.key, ciphey::test::group());
+    EXPECT_EQ(test.ctext, tmp_ctext);
   }
 }

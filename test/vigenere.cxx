@@ -5,6 +5,7 @@
 
 TEST(cipheyCore, vigenere) {
   ciphey::string_t test_string = "kb pyu bac fwoct zhyf bayv ttw, qv t dtqwya vbejb eyvm bl pwocojxp, dmymtm mfg nbpub hd vpx ngzlmpa pgvp pfqu mfka agubhpa ptq dclgpmlq.";
+  const ciphey::string_t expected_string = "it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.";
 
   auto res = ciphey::vigenere_crack(test_string, ciphey::test::expected(), ciphey::test::group(), 4);
 
@@ -23,6 +24,9 @@ TEST(cipheyCore, vigenere) {
   EXPECT_TRUE(false) << "Key was not found";
   found:
 
+  auto tmp_ctext = test_string;
   ciphey::vigenere::decrypt(test_string, actual_key, ciphey::test::group());
-  ASSERT_EQ(test_string,"it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.");
+  EXPECT_EQ(test_string, expected_string);
+  ciphey::vigenere::encrypt(test_string, actual_key, ciphey::test::group());
+  EXPECT_EQ(test_string, tmp_ctext);
 }

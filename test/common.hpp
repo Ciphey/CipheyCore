@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ciphey/candidates.hpp>
+#include <ciphey/ciphers.hpp>
 
 namespace ciphey::test {
   inline ciphey::prob_table expected() { return {

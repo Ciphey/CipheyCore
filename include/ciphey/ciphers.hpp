@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-#include <ciphey/candidates.swig.hxx>
+#include <ciphey/ciphers.swig.hxx>
 
 namespace ciphey {
   constexpr prob_t default_p_value = 0.001f;
@@ -22,6 +22,7 @@ namespace ciphey {
   }
 
   namespace caesar {
+    void encrypt(string_t& str, key_t const& key, group_t const& group);
     void decrypt(string_t& str, key_t const& key, group_t const& group);
 
     // If the p_value is set to one, we will keep going to try to maximise the p-value
@@ -31,6 +32,7 @@ namespace ciphey {
   }
 
   namespace vigenere {
+    void encrypt(string_t& str, key_t const& key, group_t const& group);
     void decrypt(string_t& str, key_t const& key, group_t const& group);
 
     std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,

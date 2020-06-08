@@ -23,7 +23,7 @@ namespace std {
   %template(analysis_t) shared_ptr<ciphey::simple_analysis_res>;
 }
 
-%include "ciphey/candidates.swig.hxx"
+%include "ciphey/ciphers.swig.hxx"
 %include "ciphey/swig.hpp"
 namespace ciphey {
   %template(caesar_results_elem) crack_result<ciphey::caesar::key_t>;
