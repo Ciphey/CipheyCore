@@ -39,4 +39,23 @@ namespace ciphey {
                                            group_t const& group, freq_t count,
                                            prob_t p_value = default_p_value);
   }
+
+  namespace xor_single {
+    void crypt(bytes_t& str, key_t const& key);
+    inline void encrypt(bytes_t& str, key_t const& key) { crypt(str, key); }
+    inline void decrypt(bytes_t& str, key_t const& key) { crypt(str, key); }
+
+    std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
+                                           group_t const& group, freq_t count,
+                                           prob_t p_value = default_p_value);
+  }
+
+  namespace xorcrypt {
+    void encrypt(string_t& str, key_t const& key, group_t const& group);
+    void decrypt(string_t& str, key_t const& key, group_t const& group);
+
+    std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
+                                           group_t const& group, freq_t count,
+                                           prob_t p_value = default_p_value);
+  }
 }

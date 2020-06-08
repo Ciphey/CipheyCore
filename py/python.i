@@ -25,6 +25,7 @@ namespace std {
 
 %include "ciphey/ciphers.swig.hxx"
 %include "ciphey/swig.hpp"
+
 namespace ciphey {
   %template(caesar_results_elem) crack_result<ciphey::caesar::key_t>;
   %template(vigenere_results_elem) crack_result<ciphey::vigenere::key_t>;
@@ -33,3 +34,7 @@ namespace std {
   %template(caesar_results) vector<ciphey::crack_result<ciphey::caesar::key_t>>;
   %template(vigenere_results) vector<ciphey::crack_result<ciphey::vigenere::key_t>>;
 }
+
+//namespace ciphey {
+//  %typemap(in) (bytes_in)
+//}

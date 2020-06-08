@@ -67,6 +67,10 @@ namespace ciphey {
     caesar::decrypt(str, key, group);
     return str;
   }
+  inline string_t caesar_encrypt(string_t str, ciphey::caesar::key_t key, group_t group) {
+    caesar::encrypt(str, key, group);
+    return str;
+  }
 
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(string_t str,
                                                                                    prob_table const& expected,
@@ -93,6 +97,11 @@ namespace ciphey {
 
   inline string_t vigenere_decrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
     vigenere::decrypt(str, key, group);
+    return str;
+  }
+
+  inline string_t vigenere_encrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
+    vigenere::encrypt(str, key, group);
     return str;
   }
 }

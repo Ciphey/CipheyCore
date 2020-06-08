@@ -17,4 +17,14 @@ namespace ciphey {
     /// A sequence of offsets
     using key_t = std::vector<size_t>;
   }
+
+  namespace xor_single {
+    /// A sequence of offsets
+    using key_t = uint8_t;
+  }
+
+  namespace xorcrypt {
+    /// A sequence of offsets
+    using key_t = std::vector<uint8_t>;
+  }
 }
