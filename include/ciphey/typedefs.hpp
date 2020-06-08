@@ -12,7 +12,7 @@ namespace ciphey {
   using freq_t = size_t;
 
   using string_t = std::basic_string<char_t>;
-  using bytes_t = std::vector<uint8_t>;
+  using data = std::vector<uint8_t>;
 
   using freq_table = std::map<char_t, freq_t>;
   using windowed_freq_table = std::vector<freq_table>;

@@ -30,8 +30,7 @@ TEST(cipheyCore, caesar) {
   for (auto& test : tests) {
     ciphey::freq_table freqs;
     ciphey::freq_analysis(freqs, test.ctext);
-    ciphey::prob_table probs;
-    ciphey::freq_conv(probs, freqs);
+    ciphey::prob_table probs = ciphey::freq_conv(freqs);
 
     auto analysis = ciphey::analyse_string(test.ctext);
 

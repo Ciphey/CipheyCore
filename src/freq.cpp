@@ -69,18 +69,35 @@ namespace ciphey {
     for (auto& i : str)
       ++tab[i];
   }
-  void freq_conv(prob_table& tab, freq_table const& freqs, freq_t total_len) {
+  prob_table freq_conv(freq_table const& freqs, freq_t total_len) {
+    prob_table ret;
     for (auto& i : freqs)
-      tab[i.first] = static_cast<prob_t>(i.second) / total_len;
+      ret[i.first] = static_cast<prob_t>(i.second) / total_len;
+    return ret;
   }
-  void freq_conv(prob_table& tab, freq_table const& freqs) {
+  prob_table freq_conv(freq_table const& freqs) {
     freq_t total_len = 0;
     for (auto& i : freqs)
       total_len += i.second;
-    freq_conv(tab, freqs, total_len);
+    return freq_conv(freqs, total_len);
+  }
+  windowed_prob_table freq_conv(windowed_freq_table& freqs, freq_t total_len) {
+    windowed_prob_table ret;
+    ret.reserve(total_len);
+    for (auto& i : freqs)
+      // TODO: work the length out here, rather than do slow counting
+      ret.emplace_back(freq_conv(i));
+    return ret;
+  }
+  windowed_prob_table freq_conv(windowed_freq_table& freqs) {
+    freq_t total_len = 0;
+    for (auto& i : freqs)
+      for (auto& entry: i)
+        total_len += entry.second;
+    return freq_conv(freqs, total_len);
   }
 
-  void filter_missing(prob_table& target, prob_table const& lookup) {
+  size_t filter_missing(freq_table& target, prob_table const& lookup) {
     std::vector<char_t> to_remove;
     for (auto& i : target)
       if (auto iter = lookup.find(i.first); iter == lookup.end() || iter->second == 0)
@@ -89,12 +106,19 @@ namespace ciphey {
     for (auto i : to_remove)
       target.erase(i);
 
-    return;
+    return to_remove.size();
   }
 
-  void freq_analysis(windowed_freq_table& tabs, string_t const& str) {
+  size_t filter_missing(windowed_freq_table& target, prob_table const& lookup) {
+    size_t acc = 0;
+    for (auto& i : target)
+      acc += filter_missing(i, lookup);
+    return acc;
+  }
+
+  void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset) {
     for (size_t i = 0; i < str.size(); ++i)
-      ++tabs[i % tabs.size()][str[i]];
+      ++tabs[(offset + i) % tabs.size()][str[i]];
   }
 
   void freq_analysis(windowed_freq_table& tabs, string_t const& str, std::set<char_t> domain) {

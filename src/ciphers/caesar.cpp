@@ -33,7 +33,7 @@ namespace ciphey::caesar {
 
     rotate_prob_table(observed, group);
     for (key_t key = 1; key < group.size(); ++key, rotate_prob_table(observed, group))
-      if (auto key_p_value = gof_chisq(create_assoc_table(observed, expected), group.size() - 1); key_p_value > p_value)
+      if (auto key_p_value = gof_chisq(create_assoc_table(observed, expected), group.size()); key_p_value > p_value)
         ret.push_back({.key = key, .p_value = key_p_value });
 
     sort_crack_result(ret);

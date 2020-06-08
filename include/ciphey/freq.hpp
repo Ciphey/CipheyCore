@@ -32,6 +32,4 @@ namespace ciphey {
   void freq_conv(prob_table&, freq_table const& freqs, freq_t total_len);
 
   void filter_missing(prob_table& target, prob_table const& lookup);
-
-
 }

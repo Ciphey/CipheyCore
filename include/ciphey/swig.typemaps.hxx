@@ -8,12 +8,12 @@
 
 namespace ciphey::swig {
   template<typename Arg>
-  inline void bytes_in(Arg& target, bytes_t const& b) noexcept {
+  inline void bytes_in(Arg& target, data const& b) noexcept {
     target = PyBytes_FromStringAndSize(reinterpret_cast<char const*>(b.data()), b.size());
   }
 
   template<typename Arg>
-  inline void bytes_out(bytes_t& target, Arg const& b) {
+  inline void bytes_out(data& target, Arg const& b) {
     size_t len;
     std::unique_ptr<char> str;
     {
@@ -22,6 +22,6 @@ namespace ciphey::swig {
         throw std::invalid_argument("Bad PyBytes");
       str.reset(ptr);
     }
-    target = bytes_t{str.data(), str.data() + len};
+    target = data{str.data(), str.data() + len};
   }
 }

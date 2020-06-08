@@ -27,7 +27,7 @@ namespace ciphey {
 
     // If the p_value is set to one, we will keep going to try to maximise the p-value
     std::vector<crack_result<key_t>> crack(prob_table observed, prob_table const& expected,
-                                           group_t const& group, freq_t count,
+                                           group_t const& group, freq_t ptext_length,
                                            prob_t p_value = default_p_value);
     prob_t detect(prob_table const& observed, prob_table const& expected, freq_t count);
   }
@@ -37,26 +37,25 @@ namespace ciphey {
     void decrypt(string_t& str, key_t const& key, group_t const& group);
 
     std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
-                                           group_t const& group, freq_t count,
+                                           group_t const& group, freq_t ptext_length,
                                            prob_t p_value = default_p_value);
   }
 
   namespace xor_single {
-    void crypt(bytes_t& str, key_t const& key);
-    inline void encrypt(bytes_t& str, key_t const& key) { crypt(str, key); }
-    inline void decrypt(bytes_t& str, key_t const& key) { crypt(str, key); }
+    void crypt(data& str, key_t const& key);
+    inline void encrypt(data& str, key_t const& key) { crypt(str, key); }
+    inline void decrypt(data& str, key_t const& key) { crypt(str, key); }
 
-    std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
-                                           group_t const& group, freq_t count,
-                                           prob_t p_value = default_p_value);
+    std::vector<crack_result<key_t>> crack(prob_table observed, prob_table const& expected,
+                                           freq_t ptext_length, prob_t p_value = default_p_value);
   }
 
   namespace xorcrypt {
-    void encrypt(string_t& str, key_t const& key, group_t const& group);
-    void decrypt(string_t& str, key_t const& key, group_t const& group);
+    void crypt(data& str, key_t const& key);
+    inline void encrypt(data& str, key_t const& key) { crypt(str, key); }
+    inline void decrypt(data& str, key_t const& key) { crypt(str, key); }
 
     std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
-                                           group_t const& group, freq_t count,
-                                           prob_t p_value = default_p_value);
+                                           freq_t ptext_length, prob_t p_value = default_p_value);
   }
 }
