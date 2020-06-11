@@ -33,9 +33,11 @@ jobs:
         cmake .. -DCIPHEY_CORE_TEST=OFF -DCIPHEY_CORE_PYTHON=C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64 -DBOOST_ROOT=%BOOST_ROOT_1_72_0%
         cmake --build . --config Release
     - name: Create python package
+      shell: cmd
       run: |
         cd build
         C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64\python -m poetry build
+        rename dist wheelhouse
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:
