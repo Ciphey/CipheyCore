@@ -20,6 +20,7 @@ namespace ciphey {
   ///
   /// @returns the probability that, given the real distribution is the expected one, something at least this uncorrelated arises
   prob_t gof_chisq(assoc_table const& assoc, freq_t count);
+  prob_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count);
   string_t generate_fuzz(prob_table const& tab, size_t len);
 
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected);
@@ -31,4 +32,6 @@ namespace ciphey {
   void freq_conv(prob_table&, freq_table const& freqs, freq_t total_len);
 
   void filter_missing(prob_table& target, prob_table const& lookup);
+
+
 }

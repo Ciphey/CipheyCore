@@ -107,37 +107,70 @@ namespace ciphey {
     }
   }
 
-string_t generate_fuzz(prob_table const& tab, size_t len) {
-  string_t ret;
-  ret.resize(len);
-  std::mt19937 rng;
+  string_t generate_fuzz(prob_table const& tab, size_t len) {
+    string_t ret;
+    ret.resize(len);
+    std::mt19937 rng;
 
-  {
-    thread_local std::random_device seed_rng;
-    thread_local std::uniform_int_distribution<decltype(rng)::result_type> seed_dist;
-    rng.seed(seed_dist(seed_rng));
-  }
-
-  thread_local std::uniform_real_distribution<float_t> dist{0, 1};
-
-  for (auto& rand_char : ret) {
-  restat_char:
-    float_t stat = dist(rng);
-    // Iterate through the table, removing the probabilities until we are within a bracket
-    for (auto const& i : tab) {
-      if ((stat -= i.second) <= 0) {
-        rand_char = i.first;
-        goto next_char;
-      }
+    {
+      thread_local std::random_device seed_rng;
+      thread_local std::uniform_int_distribution<decltype(rng)::result_type> seed_dist;
+      rng.seed(seed_dist(seed_rng));
     }
-    // This should not happen in normal usage!
-    //
-    // However, floats do weird things with rounding, so we will be leniant
-    goto restat_char;
-    next_char: {}
+
+    thread_local std::uniform_real_distribution<float_t> dist{0, 1};
+
+    for (auto& rand_char : ret) {
+    restat_char:
+      float_t stat = dist(rng);
+      // Iterate through the table, removing the probabilities until we are within a bracket
+      for (auto const& i : tab) {
+        if ((stat -= i.second) <= 0) {
+          rand_char = i.first;
+          goto next_char;
+        }
+      }
+      // This should not happen in normal usage!
+      //
+      // However, floats do weird things with rounding, so we will be leniant
+      goto restat_char;
+      next_char: {}
+    }
+
+    return ret;
   }
 
-  return ret;
-}
+  prob_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count) {
+
+    assoc_table assoc;
+    assoc.reserve(expected.size());
+    for (auto& i : expected)
+      assoc.emplace_back(assoc_table_elem{.expected = i.second});
+    std::sort(assoc.begin(), assoc.end(),
+              [](assoc_table_elem& a, assoc_table_elem& b) { return a.expected < b.expected; });
+
+    std::vector<prob_t> observed_sorted;
+    observed_sorted.reserve(observed.size());
+    for (auto& i : observed)
+      observed_sorted.emplace_back(i.second);
+    std::sort(observed_sorted.begin(), observed_sorted.end());
+    // Trim unobserved values
+    while (observed_sorted.back() == 0) observed_sorted.pop_back();
+
+    // Quick bypass to avoid more filling than we have to
+    //
+    // We must wait, as `observed` could contain zero values
+    if (observed.size() > expected.size())
+      return 0;
+
+    // Fill table with observed values, or zeroes where appropriate
+    size_t i;
+    for (i = 0; i < observed.size(); ++i)
+      assoc[i].observed = observed_sorted[i];
+    for (; i < expected.size(); ++i)
+      assoc[i].observed = 0;
+
+    return gof_chisq(assoc, count);
+  }
 }
 

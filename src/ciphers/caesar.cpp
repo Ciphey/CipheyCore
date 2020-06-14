@@ -54,4 +54,8 @@ namespace ciphey::caesar {
       if (auto iter = inverse.find(i); iter != inverse.end())
         i = group[(iter->second + key)%group.size()];
   }
+
+  prob_t detect(prob_table const& observed, prob_table const& expected, freq_t count) {
+    closeness_chisq(observed, expected, count);
+  }
 }

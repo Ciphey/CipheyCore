@@ -71,6 +71,9 @@ namespace ciphey {
     caesar::encrypt(str, key, group);
     return str;
   }
+  inline prob_t caesar_detect(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
+    return caesar::detect(in->probs, expected, in->len);
+  }
 
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(string_t str,
                                                                                    prob_table const& expected,
