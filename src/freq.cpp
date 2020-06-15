@@ -2,6 +2,7 @@
 
 #include <boost/math/special_functions/gamma.hpp>
 
+#include <optional>
 #include <random>
 #include <set>
 
