@@ -18,7 +18,7 @@ namespace ciphey {
 
   template<typename Key>
   void sort_crack_result(std::vector<crack_result<Key>>& vec) {
-    std::sort(vec.begin(), vec.end(), [](crack_result<Key>& a, crack_result<Key>& b) { return a.p_value > b.p_value; });
+    std::sort(vec.rbegin(), vec.rend(), [](crack_result<Key>& a, crack_result<Key>& b) { return a.p_value < b.p_value; });
   }
 
   namespace caesar {

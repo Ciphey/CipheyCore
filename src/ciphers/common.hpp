@@ -47,14 +47,14 @@ namespace ciphey::detail {
       intermediate_res_t imdt(observed.size());
       // Solve as distinct substitution cyphers, in parallel
       for (size_t i = 0; i < observed.size(); ++i)
-        imdt[i] = std::async(std::launch::deferred, [&, i]() -> std::vector<crack_result<BaseKey>> {
+        imdt[i] = std::async(std::launch::async, [&, i]() -> std::vector<crack_result<BaseKey>> {
           // We keep the p value so that we end up with too many, rather than too few
           return CrackOne(observed[i]/*std::move(observed[i])*/, expected,
                           std::forward<CrackArgs>(args)..., count / observed.size(), p_value);
         });
-      std::vector<std::vector<crack_result<BaseKey>>> tmp;
-      for (auto& i : imdt)
-        tmp.push_back(i.get());
+//      std::vector<std::vector<crack_result<BaseKey>>> tmp;
+//      for (auto& i : imdt)
+//        tmp.push_back(i.get());
 
       // Now we reduce the lists, and kick out any which fail our p value
       std::vector<crack_result<BaseKey> const*> indexes(observed.size() - 1);

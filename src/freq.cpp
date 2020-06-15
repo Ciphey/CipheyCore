@@ -41,54 +41,29 @@ namespace ciphey {
     return p_value;
   }
 
-  void fix_assoc_table(assoc_table& tab) {
-    std::vector<assoc_table::iterator> bad, good;
-
-    // Work out what we must defeat
-    for (auto iter = tab.begin(); iter != tab.end(); ++iter) {
-      if (iter->observed == 0)
-        bad.push_back(iter);
-      else
-        good.push_back(iter);
-    }
-
-    // Theres nothing we can do...
-    if (good.size() == 0)
-      return;
-
-    // Now do another pass to get the things to append to
-    //
-    // We grab the bad.size() smallest from good, so that we *definitely* have enough
-    while (bad.size() != 0) {
-      auto& elem = *std::min_element(good.begin(), good.end(), [](auto& a, auto& b) { return a->expected < b->expected; });
-      // Since good is not empty, this will not return an end
-      elem->expected += bad.back()->expected;
-      bad.pop_back();
-    }
-  }
-
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected) {
+    // TODO: optimise
+    //
     // First, let's get all the keys
-    std::set<char_t> keys;
-    for (auto& i : observed)
-      keys.emplace(i.first);
+    struct key_elem {
+      std::optional<float_t> obs_val, exp_val;
+    };
+
+    std::map<char_t, key_elem> keys;
     for (auto& i : expected)
-      keys.emplace(i.first);
+      keys[i.first].exp_val = i.second;
+    // We can use index notation for this, as that gets default constructed
+    for (auto& i : observed)
+      keys[i.first].obs_val = i.second;
 
     // We can now fill in all the values, with non-existent expected values being defined as zero
     assoc_table ret;
     ret.reserve(keys.size());
 
-    // Catagorise unobserved values
-    fix_assoc_table(ret);
-
-    for (auto& i : observed) {
-      auto& target = ret.emplace_back(assoc_table_elem{.observed = i.second});
-      if (auto iter = expected.find(i.first); iter != expected.end())
-        target.expected = iter->second;
-      else
-        target.expected = 0;
-    }
+    for (auto& i : keys)
+      ret.emplace_back(assoc_table_elem{
+        .observed = i.second.obs_val.value_or(0),
+        .expected = i.second.exp_val.value_or(0)});
 
     return ret;
   }
@@ -127,29 +102,49 @@ namespace ciphey {
 
   size_t filter_missing(freq_table& target, prob_table const& lookup) {
     std::vector<char_t> to_remove;
-    for (auto& i : target)
-      if (auto iter = lookup.find(i.first); iter == lookup.end() || iter->second == 0)
+    size_t ret = 0;
+    for (auto& i : target) {
+      if (auto iter = lookup.find(i.first); iter == lookup.end() || iter->second == 0) {
         to_remove.push_back(i.first);
+        ret += i.second;
+      }
+    }
 
     for (auto i : to_remove)
       target.erase(i);
 
-    return to_remove.size();
+    return ret;
   }
 
-  size_t filter_missing(windowed_freq_table& target, prob_table const& lookup) {
-    size_t acc = 0;
-    for (auto& i : target)
-      acc += filter_missing(i, lookup);
-    return acc;
+  size_t filter_missing(freq_table& target, domain_t const& tab) {
+    std::vector<char_t> to_remove;
+    size_t ret = 0;
+    for (auto& i : target) {
+      if (!tab.count(i.first)) {
+        to_remove.push_back(i.first);
+        ret += i.second;
+      }
+    }
+
+    for (auto i : to_remove)
+      target.erase(i);
+
+    return ret;
   }
+
+//  size_t filter_missing(windowed_freq_table& target, prob_table const& lookup) {
+//    size_t acc = 0;
+//    for (auto& i : target)
+//      acc += filter_missing(i, lookup);
+//    return acc;
+//  }
 
   void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset) {
     for (size_t i = 0; i < str.size(); ++i)
       ++tabs[(offset + i) % tabs.size()][str[i]];
   }
 
-  size_t freq_analysis(windowed_freq_table& tabs, string_t const& str, std::set<char_t> domain) {
+  size_t freq_analysis(windowed_freq_table& tabs, string_t const& str, domain_t const& domain) {
     size_t i = 0;
     for (auto& c : str) {
       if (domain.count(c)) {
@@ -195,16 +190,17 @@ namespace ciphey {
 
   prob_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count) {
     assoc_table assoc;
+    assoc.reserve(expected.size());
     for (auto& i : expected)
-      assoc[i.first] = assoc_table_elem{.expected = i.second};
-    std::sort(assoc.begin(), assoc.end(),
+      assoc.emplace_back(assoc_table_elem{.expected = i.second});
+    std::sort(assoc.rbegin(), assoc.rend(),
               [](assoc_table_elem& a, assoc_table_elem& b) { return a.expected < b.expected; });
 
     std::vector<prob_t> observed_sorted;
     observed_sorted.reserve(observed.size());
     for (auto& i : observed)
       observed_sorted.emplace_back(i.second);
-    std::sort(observed_sorted.begin(), observed_sorted.end());
+    std::sort(observed_sorted.rbegin(), observed_sorted.rend());
     // Trim unobserved values
     while (observed_sorted.back() == 0) observed_sorted.pop_back();
 
@@ -221,7 +217,8 @@ namespace ciphey {
     for (; i < expected.size(); ++i)
       assoc[i].observed = 0;
 
-    return gof_chisq(assoc, count);
+    auto ret = gof_chisq(assoc, count);
+    return ret;
   }
 }
 

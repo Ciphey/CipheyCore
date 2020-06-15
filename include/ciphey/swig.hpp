@@ -16,14 +16,13 @@ namespace ciphey {
   };
   inline std::shared_ptr<simple_analysis_res> analyse_string(string_t str) {
     auto ret = std::make_shared<simple_analysis_res>();
-    ret->len = str.size();
     freq_analysis(ret->freqs, str);
+    ret->len = str.size();
 //    ret->probs = freq_conv(ret->freqs, ret->len);
     return ret;
   }
   inline std::shared_ptr<simple_analysis_res> start_analysis() {
-    auto ret = std::make_shared<simple_analysis_res>();
-    return ret;
+    return std::make_shared<simple_analysis_res>();
   }
   inline void continue_analysis(std::shared_ptr<simple_analysis_res> target, string_t str) {
     freq_analysis(target->freqs, str);
@@ -46,13 +45,12 @@ namespace ciphey {
     auto ret = std::make_shared<windowed_analysis_res>();
     ret->domain = std::move(domain);
     ret->freqs.resize(window_size);
+    ret->len = str.size();
     // If we have no domain, then treat everything as in the domain
-    if (ret->domain.size() == 0) {
-      ret->len = str.size();
+    if (ret->domain.size() == 0)
       freq_analysis(ret->freqs, str);
-    }
     else
-      ret->len = freq_analysis(ret->freqs, str, ret->domain);
+      ret->len -= freq_analysis(ret->freqs, str, ret->domain);
 //    ret->probs = freq_conv(ret->freqs, ret->len);
     return ret;
   }
@@ -62,7 +60,10 @@ namespace ciphey {
     return ret;
   }
   inline void continue_analysis(std::shared_ptr<windowed_analysis_res> target, string_t str) {
-    freq_analysis(target->freqs, str);
+    if (target->domain.size())
+      freq_analysis(target->freqs, str);
+    else
+      freq_analysis(target->freqs, str, target->domain);
     target->len += str.size();
   }
 //  inline void finish_analysis(std::shared_ptr<windowed_analysis_res> target) {
@@ -89,13 +90,10 @@ namespace ciphey {
                                                                                prob_table expected, group_t group,
                                                                                bool do_filter_missing = true,
                                                                                prob_t p_value = default_p_value) {
-    if (do_filter_missing) {
-      auto tab = in->freqs;
-      size_t new_len = in->len - filter_missing(tab, expected);
-      return caesar::crack(freq_conv(tab, new_len), expected, group, new_len, p_value);
-    }
-
-    return caesar::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
+    auto tab = in->freqs;
+    size_t n_removed = filter_missing(tab, expected);
+    size_t new_len = in->len - n_removed;
+    return caesar::crack(freq_conv(tab, new_len), expected, group, new_len, p_value);
   }
 
   inline string_t caesar_decrypt(string_t str, ciphey::caesar::key_t key, group_t group) {
@@ -107,20 +105,17 @@ namespace ciphey {
     return str;
   }
   inline prob_t caesar_detect(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
-    return caesar::detect(freq_conv(in->freqs, in->len), expected, in->len);
+    auto tab = in->freqs;
+    size_t n_removed = filter_missing(tab, expected);
+    size_t new_len = in->len - n_removed;
+    auto prob_tab = freq_conv(tab, new_len);
+    return caesar::detect(prob_tab, expected, new_len);
   }
 
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(std::shared_ptr<windowed_analysis_res> in,
                                                                                    prob_table const& expected,
                                                                                    group_t const& group,
-                                                                                   bool do_filter_missing = true,
                                                                                    prob_t p_value = default_p_value) {
-    if (do_filter_missing) {
-      auto tab = in->freqs;
-      size_t new_len = in->len - filter_missing(tab, expected);
-      return vigenere::crack(freq_conv(tab, new_len), expected, group, new_len, p_value);
-    }
-
     return vigenere::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
   }
 

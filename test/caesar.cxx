@@ -26,6 +26,15 @@ std::vector<test_elem> tests {
   }
 };
 
+TEST(cipheyCore, caesarDetect) {
+  for (auto& test : tests) {
+    auto analysis = ciphey::analyse_string(test.ctext);
+    auto score = ciphey::caesar_detect(analysis, ciphey::test::expected());
+    std::cout << "Scored " << score << std::endl;
+    EXPECT_GT(score, ciphey::default_p_value);
+  }
+}
+
 TEST(cipheyCore, caesar) {
   for (auto& test : tests) {
     ciphey::freq_table freqs;
@@ -34,7 +43,7 @@ TEST(cipheyCore, caesar) {
 
     auto analysis = ciphey::analyse_string(test.ctext);
 
-    auto res_collection = ciphey::caesar_crack(analysis, ciphey::test::expected(), ciphey::test::group(), true);
+    auto res_collection = ciphey::caesar_crack(analysis, ciphey::test::expected(), ciphey::test::group());
     std::cout << res_collection.size() << " options" << std::endl;
 
     for (size_t i = 0; i < res_collection.size(); ++i) {
