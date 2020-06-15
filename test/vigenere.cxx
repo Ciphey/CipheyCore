@@ -7,7 +7,9 @@ TEST(cipheyCore, vigenere) {
   ciphey::string_t test_string = "kb pyu bac fwoct zhyf bayv ttw, qv t dtqwya vbejb eyvm bl pwocojxp, dmymtm mfg nbpub hd vpx ngzlmpa pgvp pfqu mfka agubhpa ptq dclgpmlq.";
   const ciphey::string_t expected_string = "it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.";
 
-  auto res = ciphey::vigenere_crack(test_string, ciphey::test::expected(), ciphey::test::group(), 4);
+  auto analysis = ciphey::analyse_string(test_string, 4, ciphey::test::domain());
+
+  auto res = ciphey::vigenere_crack(analysis, ciphey::test::expected(), ciphey::test::group());
 
   ciphey::vigenere::key_t actual_key = {'c', 'i', 't', 'y'};
   for (auto& i : actual_key)

@@ -49,9 +49,12 @@ namespace ciphey::detail {
       for (size_t i = 0; i < observed.size(); ++i)
         imdt[i] = std::async(std::launch::deferred, [&, i]() -> std::vector<crack_result<BaseKey>> {
           // We keep the p value so that we end up with too many, rather than too few
-          return CrackOne(std::move(observed[i]), expected,
+          return CrackOne(observed[i]/*std::move(observed[i])*/, expected,
                           std::forward<CrackArgs>(args)..., count / observed.size(), p_value);
         });
+      std::vector<std::vector<crack_result<BaseKey>>> tmp;
+      for (auto& i : imdt)
+        tmp.push_back(i.get());
 
       // Now we reduce the lists, and kick out any which fail our p value
       std::vector<crack_result<BaseKey> const*> indexes(observed.size() - 1);

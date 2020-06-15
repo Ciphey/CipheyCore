@@ -31,7 +31,6 @@ namespace ciphey {
     return boost::math::gamma_p(static_cast<float>(dof) / 2, up_to / 2);
   }
 
-
   prob_t gof_chisq(assoc_table const& assoc, freq_t count) {
     auto stat = run_chisq(assoc, count);
     // Handle the asymptopic value
@@ -40,6 +39,32 @@ namespace ciphey {
     // We want the upper tail
     auto p_value = 1 - chisq_cdf(assoc.size() - 1, stat);
     return p_value;
+  }
+
+  void fix_assoc_table(assoc_table& tab) {
+    std::vector<assoc_table::iterator> bad, good;
+
+    // Work out what we must defeat
+    for (auto iter = tab.begin(); iter != tab.end(); ++iter) {
+      if (iter->observed == 0)
+        bad.push_back(iter);
+      else
+        good.push_back(iter);
+    }
+
+    // Theres nothing we can do...
+    if (good.size() == 0)
+      return;
+
+    // Now do another pass to get the things to append to
+    //
+    // We grab the bad.size() smallest from good, so that we *definitely* have enough
+    while (bad.size() != 0) {
+      auto& elem = *std::min_element(good.begin(), good.end(), [](auto& a, auto& b) { return a->expected < b->expected; });
+      // Since good is not empty, this will not return an end
+      elem->expected += bad.back()->expected;
+      bad.pop_back();
+    }
   }
 
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected) {
@@ -54,12 +79,15 @@ namespace ciphey {
     assoc_table ret;
     ret.reserve(keys.size());
 
+    // Catagorise unobserved values
+    fix_assoc_table(ret);
+
     for (auto& i : observed) {
-      ret.emplace_back(assoc_table_elem{.name = i.first, .observed = i.second});
+      auto& target = ret.emplace_back(assoc_table_elem{.observed = i.second});
       if (auto iter = expected.find(i.first); iter != expected.end())
-        ret.back().expected = iter->second;
+        target.expected = iter->second;
       else
-        ret.back().expected = 0;
+        target.expected = 0;
     }
 
     return ret;
@@ -121,7 +149,7 @@ namespace ciphey {
       ++tabs[(offset + i) % tabs.size()][str[i]];
   }
 
-  void freq_analysis(windowed_freq_table& tabs, string_t const& str, std::set<char_t> domain) {
+  size_t freq_analysis(windowed_freq_table& tabs, string_t const& str, std::set<char_t> domain) {
     size_t i = 0;
     for (auto& c : str) {
       if (domain.count(c)) {
@@ -129,6 +157,7 @@ namespace ciphey {
         ++i;
       }
     }
+    return i;
   }
 
   string_t generate_fuzz(prob_table const& tab, size_t len) {
@@ -165,11 +194,9 @@ namespace ciphey {
   }
 
   prob_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count) {
-
     assoc_table assoc;
-    assoc.reserve(expected.size());
     for (auto& i : expected)
-      assoc.emplace_back(assoc_table_elem{.expected = i.second});
+      assoc[i.first] = assoc_table_elem{.expected = i.second};
     std::sort(assoc.begin(), assoc.end(),
               [](assoc_table_elem& a, assoc_table_elem& b) { return a.expected < b.expected; });
 

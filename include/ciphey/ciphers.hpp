@@ -12,7 +12,7 @@
 #include <ciphey/ciphers.swig.hxx>
 
 namespace ciphey {
-  constexpr prob_t default_p_value = 0.001f;
+  constexpr prob_t default_p_value = 1e-3f;
 
   inverse_group_t invert_group(group_t const&);
 

@@ -11,7 +11,7 @@
 #include <cstdint>
 
 namespace ciphey {
-  struct assoc_table_elem { char_t name; prob_t observed; prob_t expected; };
+  struct assoc_table_elem { prob_t observed; prob_t expected; };
   using assoc_table = std::vector<assoc_table_elem>;
 
   float_t run_chisq(assoc_table const& assoc, freq_t count);
@@ -26,10 +26,15 @@ namespace ciphey {
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected);
 
   void freq_analysis(freq_table&, string_t const& str);
-  void freq_analysis(windowed_freq_table&, string_t const& str);
-  void freq_analysis(windowed_freq_table&, string_t const& str, std::set<char_t> domain);
-  void freq_conv(prob_table&, freq_table const& freqs);
-  void freq_conv(prob_table&, freq_table const& freqs, freq_t total_len);
+  size_t freq_analysis(windowed_freq_table&, string_t const& str, std::set<char_t> domain);
+  void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset = 0);
+  prob_table freq_conv(freq_table const& freqs, freq_t total_len);
+  prob_table freq_conv(freq_table const& freqs);
+  windowed_prob_table freq_conv(windowed_freq_table& freqs, freq_t total_len);
+  windowed_prob_table freq_conv(windowed_freq_table& freqs);
+
+  size_t filter_missing(freq_table& target, prob_table const& lookup);
+  size_t filter_missing(windowed_freq_table& target, prob_table const& lookup);
 
   void filter_missing(prob_table& target, prob_table const& lookup);
 }

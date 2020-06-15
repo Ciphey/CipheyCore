@@ -10,8 +10,8 @@ struct test_elem {
 
 std::vector<test_elem> tests {
   {
-    "xubbe, mehbt",
-    "hello, world",
+    "xubbe, fbqduj",
+    "hello, planet",
     16
   },
   {

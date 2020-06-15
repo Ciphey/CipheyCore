@@ -9,7 +9,7 @@
 namespace ciphey::vigenere {
   std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
                                          group_t const& group, freq_t count, prob_t p_value) {
-    detail::reducer<key_t, caesar::key_t, caesar::crack, group_t const&>::crack(observed, expected, count, p_value, group);
+    return detail::reducer<key_t, caesar::key_t, caesar::crack, group_t const&>::crack(observed, expected, count, p_value, group);
   }
 
   void encrypt(string_t& str, key_t const& key, group_t const& group) {

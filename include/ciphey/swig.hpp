@@ -38,22 +38,31 @@ namespace ciphey {
   // +-------------------------------------------------------------------------+
   struct windowed_analysis_res {
     windowed_freq_table freqs;
+    std::set<char_t> domain;
     freq_t len = 0;
   };
-  inline std::shared_ptr<windowed_analysis_res> analyse_string(string_t str, size_t window_size) {
+  inline std::shared_ptr<windowed_analysis_res> analyse_string(string_t str, size_t window_size,
+                                                               std::set<char_t> domain = {}) {
     auto ret = std::make_shared<windowed_analysis_res>();
-    ret->len = str.size();
+    ret->domain = std::move(domain);
     ret->freqs.resize(window_size);
-    freq_analysis(ret->freqs, str);
+    // If we have no domain, then treat everything as in the domain
+    if (ret->domain.size() == 0) {
+      ret->len = str.size();
+      freq_analysis(ret->freqs, str);
+    }
+    else
+      ret->len = freq_analysis(ret->freqs, str, ret->domain);
 //    ret->probs = freq_conv(ret->freqs, ret->len);
     return ret;
   }
-  inline std::shared_ptr<simple_analysis_res> start_analysis(size_t window_size) {
-    auto ret = std::make_shared<simple_analysis_res>();
+  inline std::shared_ptr<windowed_analysis_res> start_analysis(size_t window_size, std::set<char_t> domain = {}) {
+    auto ret = std::make_shared<windowed_analysis_res>();
+    ret->domain = domain;
     return ret;
   }
   inline void continue_analysis(std::shared_ptr<windowed_analysis_res> target, string_t str) {
-    freq_analysis(target->freqs, str, target->len);
+    freq_analysis(target->freqs, str);
     target->len += str.size();
   }
 //  inline void finish_analysis(std::shared_ptr<windowed_analysis_res> target) {
@@ -98,7 +107,7 @@ namespace ciphey {
     return str;
   }
   inline prob_t caesar_detect(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
-    return caesar::detect(in->probs, expected, in->len);
+    return caesar::detect(freq_conv(in->freqs, in->len), expected, in->len);
   }
 
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(std::shared_ptr<windowed_analysis_res> in,
