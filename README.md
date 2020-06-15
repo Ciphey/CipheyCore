@@ -1,3 +1,4 @@
+![PyPI](https://img.shields.io/pypi/v/cipheycore)
 # CipheyCore
 Some cryptanalysis tidbits written in a *proper* language
 
