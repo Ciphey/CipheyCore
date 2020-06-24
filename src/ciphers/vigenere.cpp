@@ -32,4 +32,9 @@ namespace ciphey::vigenere {
 
     encrypt(str, inv_key, group);
   }
+
+  prob_t detect(windowed_prob_table const& observed, prob_table const& expected, freq_t count) {
+    auto stat = closeness_chisq(observed, expected, count);
+    return 1 - chisq_cdf(count - 1, stat);
+  }
 }

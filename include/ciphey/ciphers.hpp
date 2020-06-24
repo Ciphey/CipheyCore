@@ -39,6 +39,7 @@ namespace ciphey {
     std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
                                            group_t const& group, freq_t ptext_length,
                                            prob_t p_value = default_p_value);
+    prob_t detect(windowed_prob_table const& observed, prob_table const& expected, freq_t count);
   }
 
   namespace xor_single {

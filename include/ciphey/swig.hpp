@@ -80,7 +80,7 @@ namespace ciphey {
   }
 
   inline prob_t chisq_test(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
-    return gof_chisq(create_assoc_table(freq_conv(in->freqs, in->len), expected), in->len);
+    return gof_test(create_assoc_table(freq_conv(in->freqs, in->len), expected), in->len);
   }
 
   // +-------------------------------------------------------------------------+
@@ -118,15 +118,17 @@ namespace ciphey {
                                                                                    prob_t p_value = default_p_value) {
     return vigenere::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
   }
-
   inline string_t vigenere_decrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
     vigenere::decrypt(str, key, group);
     return str;
   }
-
   inline string_t vigenere_encrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
     vigenere::encrypt(str, key, group);
     return str;
+  }
+  inline prob_t vigenere_detect(std::shared_ptr<windowed_analysis_res> in, prob_table expected) {
+    auto prob_tab = freq_conv(in->freqs, in->len);
+    return vigenere::detect(prob_tab, expected, in->len);
   }
 
 //  inline data xor_single_crypt(data str, ciphey::xor_single::key_t key) {

@@ -27,15 +27,15 @@ TEST(cipheyCore, chisqGof) {
     obs_sum += i.observed; exp_sum += i.expected;
   }
 
-  ASSERT_LE(::abs(obs_sum - 1), 0.001);
-  ASSERT_LE(::abs(exp_sum - 1), 0.001);
+  EXPECT_LE(::abs(obs_sum - 1), 0.001);
+  EXPECT_LE(::abs(exp_sum - 1), 0.001);
 
-  auto stat = ciphey::gof_chisq(assoc, new_len);
+  auto stat = ciphey::gof_test(assoc, new_len);
   EXPECT_GT(stat, ciphey::default_p_value);
 }
 
 
-TEST(cipheyCore, windowed_freq) {
+TEST(cipheyCore, windowedFreq) {
   ciphey::string_t str = "abcadcabcabc1d3";
   ciphey::windowed_freq_table tab(3);
   ciphey::freq_analysis(tab, str);
@@ -47,4 +47,16 @@ TEST(cipheyCore, windowed_freq) {
   };
 
   ASSERT_EQ(tab, true_table);
+}
+
+
+TEST(cipheyCore, simpleCloseness) {
+  ciphey::prob_table obs  = {{'a', 0.5}, {'b', 0.2}, {'c', 0.3}};
+  ciphey::prob_table exp  = {{'c', 0.5}, {'b', 0.2}, {'a', 0.3}};
+  ciphey::prob_table exp2 = {{'c', 0.4}, {'b', 0.3}, {'a', 0.3}};
+
+  EXPECT_EQ(ciphey::closeness_chisq(obs, exp, 10), 0);
+
+  auto res = ciphey::closeness_chisq(obs, exp2, 10);
+  EXPECT_LE(::abs(res - 0.58), 0.01);
 }

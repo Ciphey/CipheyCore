@@ -33,7 +33,7 @@ namespace ciphey::xor_single {
     for (uint8_t key = 1; key != 0; ++key) {
       // Undo last one, and add our one (the -1'th term is 0, so no effect!)
       xor_prob_table(observed, key ^ (key - 1));
-      if (auto key_p_value = gof_chisq(create_assoc_table(observed, expected), 256); key_p_value > p_value)
+      if (auto key_p_value = gof_test(create_assoc_table(observed, expected), 256); key_p_value > p_value)
         ret.push_back({.key = key, .p_value = key_p_value });
     }
 

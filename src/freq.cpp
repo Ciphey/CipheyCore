@@ -2,9 +2,11 @@
 
 #include <boost/math/special_functions/gamma.hpp>
 
+#include <future>
 #include <optional>
 #include <random>
 #include <set>
+#include <thread>
 
 namespace ciphey {
   float_t run_chisq(assoc_table const& assoc, freq_t count) {
@@ -28,15 +30,17 @@ namespace ciphey {
     return chisq;
   }
 
-  float_t chisq_cdf(freq_t dof, float_t up_to) {
+  prob_t chisq_cdf(freq_t dof, float_t up_to) {
+    // Handle the asymptopic value first, to save time
+    if (up_to == std::numeric_limits<float_t>::infinity())
+      return 1;
+    if (up_to == 0)
+      return 0;
     return boost::math::gamma_p(static_cast<float>(dof) / 2, up_to / 2);
   }
 
-  prob_t gof_chisq(assoc_table const& assoc, freq_t count) {
+  prob_t gof_test(assoc_table const& assoc, freq_t count) {
     auto stat = run_chisq(assoc, count);
-    // Handle the asymptopic value
-    if (stat == std::numeric_limits<float_t>::infinity())
-      return 0;
     // We want the upper tail
     auto p_value = 1 - chisq_cdf(assoc.size() - 1, stat);
     return p_value;
@@ -189,7 +193,7 @@ namespace ciphey {
     return ret;
   }
 
-  prob_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count) {
+  assoc_table closeness_assoc(prob_table const& observed, prob_table const& expected) {
     assoc_table assoc;
     assoc.reserve(expected.size());
     for (auto& i : expected)
@@ -205,21 +209,58 @@ namespace ciphey {
     // Trim unobserved values
     while (observed_sorted.back() == 0) observed_sorted.pop_back();
 
+    // Fill table with observed values, or zeroes where appropriate
+    size_t i;
+    if (observed.size() > expected.size()) {
+      assoc.resize(observed.size());
+      for (i = 0; i < expected.size(); ++i)
+        assoc[i].observed = observed_sorted[i];
+      for (; i < observed.size(); ++i)
+        assoc[i] = assoc_table_elem{.observed = observed_sorted[i], .expected = 0};
+    }
+    else {
+      for (i = 0; i < observed.size(); ++i)
+        assoc[i].observed = observed_sorted[i];
+      for (; i < expected.size(); ++i)
+        assoc[i].observed = 0;
+    }
+
+    return assoc;
+  }
+
+  float_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count) {
     // Quick bypass to avoid more filling than we have to
-    //
-    // We must wait, as `observed` could contain zero values
     if (observed.size() > expected.size())
       return 0;
 
-    // Fill table with observed values, or zeroes where appropriate
-    size_t i;
-    for (i = 0; i < observed.size(); ++i)
-      assoc[i].observed = observed_sorted[i];
-    for (; i < expected.size(); ++i)
-      assoc[i].observed = 0;
+    auto assoc = closeness_assoc(observed, expected);
+    return run_chisq(assoc, count);
+  }
 
-    auto ret = gof_chisq(assoc, count);
-    return ret;
+  float_t closeness_chisq(windowed_prob_table const& observed, prob_table const& expected, freq_t count) {
+    std::vector<std::future<float_t>> asyncs(observed.size());
+
+    for (size_t i = 0; i < observed.size(); ++i) {
+      asyncs[i] = std::async(std::launch::async, [&, i]() -> float_t {
+        // Quick bypass to avoid more filling than we have to
+        if (observed.size() > expected.size())
+          return 0;
+
+        auto assoc = closeness_assoc(observed[i], expected);
+
+        // We can normalise at the end for efficiency
+        return run_chisq(assoc);
+      });
+    }
+
+    float_t sum;
+    for (auto& i : asyncs)
+      sum += i.get();
+
+    // Finally, we can normalise
+    sum *= count;
+
+    return sum;
   }
 }
 
