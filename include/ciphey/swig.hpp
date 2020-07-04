@@ -37,11 +37,11 @@ namespace ciphey {
   // +-------------------------------------------------------------------------+
   struct windowed_analysis_res {
     windowed_freq_table freqs;
-    std::set<char_t> domain;
+    domain_t domain;
     freq_t len = 0;
   };
   inline std::shared_ptr<windowed_analysis_res> analyse_string(string_t str, size_t window_size,
-                                                               std::set<char_t> domain = {}) {
+                                                               domain_t domain = {}) {
     auto ret = std::make_shared<windowed_analysis_res>();
     ret->domain = std::move(domain);
     ret->freqs.resize(window_size);
@@ -54,7 +54,7 @@ namespace ciphey {
 //    ret->probs = freq_conv(ret->freqs, ret->len);
     return ret;
   }
-  inline std::shared_ptr<windowed_analysis_res> start_analysis(size_t window_size, std::set<char_t> domain = {}) {
+  inline std::shared_ptr<windowed_analysis_res> start_analysis(size_t window_size, domain_t domain = {}) {
     auto ret = std::make_shared<windowed_analysis_res>();
     ret->domain = domain;
     return ret;

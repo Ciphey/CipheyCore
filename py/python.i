@@ -5,6 +5,7 @@
 %include std_map.i
 %include std_vector.i
 %include std_shared_ptr.i
+%include std_set.i
 
 %{
 #include <map>
@@ -21,6 +22,8 @@ namespace std {
   %template(group_t) vector<ciphey::char_t>;
   %template(viginere_key_t) vector<size_t>;
   %template(analysis_t) shared_ptr<ciphey::simple_analysis_res>;
+  %template(windowed_analysis_t) shared_ptr<ciphey::windowed_analysis_res>;
+  %template(domain_t) set<ciphey::char_t>;
 }
 
 %include "ciphey/ciphers.swig.hxx"
