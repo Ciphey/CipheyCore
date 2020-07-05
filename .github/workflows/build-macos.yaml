@@ -21,7 +21,8 @@ jobs:
     - name: Homebrew deps
       run: |
         brew update
-        brew install python${{matrix.ver}} boost swig
+        brew upgrade python${{matrix.ver}} ||  brew install python${{matrix.ver}}
+        brew install boost swig
         /usr/local/Cellar/python${{matrix.ver}}/*/Frameworks/Python.framework/Versions/3*/bin/python3 -c "import sys; print(sys.version)"
     - name: Python3 pip deps
       run: |

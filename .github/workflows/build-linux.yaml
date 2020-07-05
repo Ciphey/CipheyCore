@@ -32,24 +32,20 @@ jobs:
         ./configure
         make
         make install
-    - name: overlay hack
-      run: |
-        ln -s /opt/python/${{matrix.abi}}/include/python*/ /opt/python_headers
-        cp -rn /opt/python/${{matrix.abi}}/bin/* /usr/bin
     - name: pip deps
       run: |
-        python3 -m pip install poetry auditwheel setuptools
+       /opt/python/${{matrix.abi}}/bin/python3 -m pip install poetry auditwheel setuptools
     - name: Do build
       run: |
         mkdir build && cd build
-        cmake3 .. -DCIPHEY_CORE_TEST=OFF -DCIPHEY_CORE_PYTHON=/opt/python_headers -DCMAKE_BUILD_TYPE=Release
+        cmake3 .. -DCIPHEY_CORE_TEST=OFF -DCIPHEY_CORE_PYTHON=$(echo /opt/python/${{matrix.abi}}/include/python*) -DCMAKE_BUILD_TYPE=Release
         cmake3 --build .
     - name: Create python package
       run: |
         cd build
-        python3 -m poetry build
-        python3 -m auditwheel show dist/*.whl
-        python3 -m auditwheel repair dist/*.whl
+        /opt/python/${{matrix.abi}}/bin/python3 -m poetry build
+        /opt/python/${{matrix.abi}}/bin/python3 -m auditwheel show dist/*.whl
+        /opt/python/${{matrix.abi}}/bin/python3 -m auditwheel repair dist/*.whl
     - name: Upload result
       uses: actions/upload-artifact@v2
       with:
