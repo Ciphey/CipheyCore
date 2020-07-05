@@ -1,8 +1,8 @@
 name: Test
 on: push
 jobs:
-  name: test
-  runs-on: windows-latest
-  steps:
-  - name: test
-    run: dir C:\hostedtoolcache\windows\Python\
+  test:
+    runs-on: windows-latest
+    steps:
+    - name: test
+      run: dir C:\hostedtoolcache\windows\Python\
