@@ -60,3 +60,14 @@ TEST(cipheyCore, simpleCloseness) {
   auto res = ciphey::closeness_chisq(obs, exp2, 10);
   EXPECT_LE(::abs(res - 0.58), 0.01);
 }
+
+TEST(cipheyCore, entropy) {
+  auto* data_ptr = u8"\x0f\xf0\x03";
+  auto len = 0;
+  for (auto i = data_ptr; *i; ++i) ++len;
+
+  ciphey::data data(data_ptr, data_ptr+len);
+
+  std::cout << ciphey::information_content(data) << std::endl;
+
+}

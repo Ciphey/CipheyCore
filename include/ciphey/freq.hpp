@@ -29,12 +29,16 @@ namespace ciphey {
 
   string_t generate_fuzz(prob_table const& tab, size_t len);
 
+  // Shannon entropy calculation
+  float_t information_content(data const& b);
+
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected);
   assoc_table closeness_assoc(prob_table const& observed, prob_table const& expected);
 
   void freq_analysis(freq_table&, string_t const& str);
   size_t freq_analysis(windowed_freq_table&, string_t const& str, domain_t const& domain);
   void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset = 0);
+
   prob_table freq_conv(freq_table const& freqs, freq_t total_len);
   prob_table freq_conv(freq_table const& freqs);
   windowed_prob_table freq_conv(windowed_freq_table& freqs, freq_t total_len);

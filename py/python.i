@@ -7,10 +7,19 @@
 %include std_shared_ptr.i
 %include std_set.i
 
+
+%include "ciphey/swig.typemaps.hxx"
+
+namespace ciphey {
+  %typemap(in) data { ::ciphey::swig::bytes_in($1, $input); }
+  %typemap(out) data { ::ciphey::swig::bytes_out($result, $1); }
+}
+
 %{
 #include <map>
   #define SWIG_FILE_WITH_INIT
   #include "ciphey/typedefs.hpp"
+  #include "ciphey/swig.typemaps.hxx"
   #include "ciphey/swig.hpp"
 %}
 
@@ -24,6 +33,7 @@ namespace std {
   %template(analysis_t) shared_ptr<ciphey::simple_analysis_res>;
   %template(windowed_analysis_t) shared_ptr<ciphey::windowed_analysis_res>;
   %template(domain_t) set<ciphey::char_t>;
+  %template(data) vector<uint8_t>;
 }
 
 %include "ciphey/ciphers.swig.hxx"
@@ -37,7 +47,3 @@ namespace std {
   %template(caesar_results) vector<ciphey::crack_result<ciphey::caesar::key_t>>;
   %template(vigenere_results) vector<ciphey::crack_result<ciphey::vigenere::key_t>>;
 }
-
-//namespace ciphey {
-//  %typemap(in) (bytes_in)
-//}

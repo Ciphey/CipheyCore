@@ -262,5 +262,47 @@ namespace ciphey {
 
     return sum;
   }
+
+  float_t calculate_entropy(std::map<uint8_t, freq_t> const& freqs, size_t len) {
+    float_t ret = 0;
+    for (auto& i : freqs)  {
+      float_t observed_prob = static_cast<float_t>(i.second) / len;
+      ret -= observed_prob * ::log2(observed_prob);
+      // Some nice printing, kept for future debug
+//      std::cout << "  " << std::hex << (int)i.first << ": " << i.second << std::endl;
+    }
+
+//    std::cout << ret << std::endl;
+    return ret;
+  }
+
+  float_t information_content(data const& b) {
+    // TODO:
+    // I would prefer something more empirical,
+    // rather than just brute forcing the token size
+
+    std::map<uint8_t, freq_t> byte_freqs;
+    std::map<uint8_t, freq_t> nybble_freqs;
+    std::map<uint8_t, freq_t> pair_freqs;
+    std::map<uint8_t, freq_t> bit_freqs;
+    for (auto i : b) {
+      ++byte_freqs[i];
+      ++nybble_freqs[i>>4];
+      ++nybble_freqs[i&0xf];
+      ++pair_freqs[i&0x3];
+      ++pair_freqs[(i>>2)&0x3];
+      ++pair_freqs[(i>>4)&0x3];
+      ++pair_freqs[(i>>6)&0x3];
+      for (int bit = 0; bit < 8; ++bit)
+        ++bit_freqs[(i >> bit) & 1];
+    }
+
+    return std::min({
+                      calculate_entropy(byte_freqs,   b.size()    ) / 8,
+                      calculate_entropy(nybble_freqs, b.size() * 2) / 4,
+                      calculate_entropy(pair_freqs,   b.size() * 4) / 2,
+                      calculate_entropy(bit_freqs,    b.size() * 8)
+                    }) * b.size();
+  }
 }
 

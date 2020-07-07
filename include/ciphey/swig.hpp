@@ -75,12 +75,16 @@ namespace ciphey {
   // +-------------------------------------------------------------------------+
 
   // TODO: add noise param
-  inline string_t fuzz(std::shared_ptr<simple_analysis_res> const& in, size_t len) {
+  inline string_t fuzz(std::shared_ptr<simple_analysis_res> in, size_t len) {
     return generate_fuzz(freq_conv(in->freqs, in->len), len);
   }
 
   inline prob_t chisq_test(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
     return gof_test(create_assoc_table(freq_conv(in->freqs, in->len), expected), in->len);
+  }
+
+  inline float_t info_content(data in) {
+    return information_content(in);
   }
 
   // +-------------------------------------------------------------------------+
