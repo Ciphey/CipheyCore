@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ciphey/ausearch.hpp>
 #include <ciphey/ciphers.hpp>
 
 #include <memory>
@@ -133,6 +134,15 @@ namespace ciphey {
   inline prob_t vigenere_detect(std::shared_ptr<windowed_analysis_res> in, prob_table expected) {
     auto prob_tab = freq_conv(in->freqs, in->len);
     return vigenere::detect(prob_tab, expected, in->len);
+  }
+
+  // +-------------------------------------------------------------------------+
+  // |                                AUSEARCH                                 |
+  // +-------------------------------------------------------------------------+
+  inline size_t ausearch_minimise(std::vector<ausearch_node> input) {
+    auto nodes = ausearch::convert_nodes(input);
+    ausearch::minimise_nodes(nodes);
+    return nodes.front().index;
   }
 
 //  inline data xor_single_crypt(data str, ciphey::xor_single::key_t key) {

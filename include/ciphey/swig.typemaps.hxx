@@ -5,6 +5,7 @@
 #include <Python.h>
 
 #include <memory>
+#include <stdexcept>
 
 namespace ciphey::swig {
   template<typename Arg>

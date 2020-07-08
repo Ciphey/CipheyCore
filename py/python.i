@@ -34,7 +34,10 @@ namespace std {
   %template(windowed_analysis_t) shared_ptr<ciphey::windowed_analysis_res>;
   %template(domain_t) set<ciphey::char_t>;
   %template(data) vector<uint8_t>;
+  %template(ausearch_nodes_t) vector<ciphey::ausearch_node>;
 }
+
+%include "ciphey/ausearch.swig.hxx"
 
 %include "ciphey/ciphers.swig.hxx"
 %include "ciphey/swig.hpp"
