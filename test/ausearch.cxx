@@ -5,21 +5,26 @@
 
 TEST(cipheyCore, ausearch) {
   std::vector<ciphey::ausearch_node> nodes = {
-    {.success_probability = 0.9, .success_time=0.4, . failure_time=0.2},
-    {.success_probability = 0.5, .success_time=0.1, . failure_time=0.3},
-    {.success_probability = 0.6, .success_time=0.4, . failure_time=0.4},
-    {.success_probability = 0.99, .success_time=10, . failure_time=15},
-    {.success_probability = 0.1, .success_time=0.01, . failure_time=0.001},
-    {.success_probability = 0.8, .success_time=0.2, . failure_time=0.4},
-    {.success_probability = 0.3, .success_time=0.6, . failure_time=0.3},
-    {.success_probability = 0.91, .success_time=4.2, . failure_time=0.3},
+    {0.9, 0.4, 0.2},
+    {0.5, 0.1, 0.3},
+    {0.6, 0.4, 0.4},
+    {0.99, 10, 15},
+    {0.1, 0.01, 0.001},
+    {0.8, 0.2, 0.4},
+    {0.3, 0.6, 0.3},
+    {0.91, 4.2, 0.3},
   };
 
   auto conv = ciphey::ausearch::convert_nodes(nodes);
-  while(true) {
-    std::random_shuffle(conv.begin(), conv.end());
+  ciphey::ausearch::minimise_nodes(conv);
+  auto x = ciphey::ausearch::calculate_weight(conv);
 
+  EXPECT_LT(x, 0.306);
+
+  for (uint_fast32_t i = 0; i < 1e5; ++i) {
+    std::random_shuffle(nodes.begin(), nodes.end());
+    conv = ciphey::ausearch::convert_nodes(nodes);
     ciphey::ausearch::minimise_nodes(conv);
-    std::cout << ciphey::ausearch::calculate_weight(conv) << std::endl;
+    EXPECT_EQ(x, ciphey::ausearch::calculate_weight(conv));
   }
 }

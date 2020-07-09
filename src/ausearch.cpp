@@ -7,38 +7,38 @@
 #include <iostream>
 
 namespace ciphey::ausearch {
-  float_t calculate_expected_time(ausearch_node const& node) {
-    return (node.success_probability * node.success_time) +
-           ((1-node.success_probability) * node.failure_time);
+//  float_t calculate_expected_time(ausearch_node const& node) {
+//    return (node.success_probability * node.success_time) +
+//           ((1-node.success_probability) * node.failure_time);
+//  }
+
+  // Iterating forward is *way* faster
+  float_t calculate_antiweight(std::vector<node_info> const& nodes) {
+    return std::accumulate(nodes.begin(), nodes.end(), float_t{0.}, [](float_t weight, auto& i) {
+      ausearch_node const& node = *i;
+      return (node.success_probability * node.success_time) + (node.failure_probability * (node.failure_time + weight));
+    });
   }
 
   float_t calculate_weight(std::vector<node_info> const& nodes) {
-    float_t weight = 0;
-
-    for (auto iter = nodes.rbegin(); iter != nodes.rend(); ++iter) {
-      weight = (iter->node.success_probability * iter->node.success_time) +
-          ((1-iter->node.success_probability) * (iter->node.failure_time + weight));
-    }
-
-    return weight;
+    return std::accumulate(nodes.rbegin(), nodes.rend(), float_t{0.}, [](float_t weight, auto& i) {
+      ausearch_node const& node = *i;
+      return (node.success_probability * node.success_time) + ((node.failure_probability) * (node.failure_time + weight));
+    });
   }
+
   float_t calculate_weight(std::vector<ausearch_node> const& nodes) {
-    float_t weight = 0;
-
-    for (auto iter = nodes.rbegin(); iter != nodes.rend(); ++iter) {
-      weight = (iter->success_probability * iter->success_time) +
-          ((1-iter->success_probability) * (iter->failure_time + weight));
-    }
-
-    return weight;
+    return std::accumulate(nodes.rbegin(), nodes.rend(), float_t{0.}, [](float_t weight, auto& node) {
+      return (node.success_probability * node.success_time) + ((node.failure_probability) * (node.failure_time + weight));
+    });
   }
 
   float_t brute_nodes(std::vector<node_info>& nodes, size_t target) {
-    float_t best_weight = calculate_weight(nodes);
+    float_t best_weight = calculate_antiweight(nodes);
     // Triangle swaps
     for (size_t i = target + 1; i < nodes.size(); ++i) {
       std::swap(nodes[i], nodes[target]);
-      auto new_weight = calculate_weight(nodes);
+      auto new_weight = calculate_antiweight(nodes);
       if (new_weight < best_weight)
         best_weight = new_weight;
       else
@@ -52,59 +52,67 @@ namespace ciphey::ausearch {
   void minimise_nodes(std::vector<node_info>& nodes) {
     if (nodes.size() < 2) return;
 
+    // It turns out that it is faster to optimise for antiweight (weight in reverse)
+    //
+    // This is because weight is iteratively calculated from the end,
+    // and most machines run faster when iterating *forwards*
+
     // First, we calculate an upper bound on the weight
-    float_t weight, old_weight = calculate_weight(nodes);
+    float_t weight, old_weight = calculate_antiweight(nodes);
     size_t n = 0;
     while (true) {
       ++n;
       float_t remaining_weight = old_weight;
 
       // Now, iterating down the node list, trying to find the minimising value
-      std::list<node_info> node_set(nodes.begin(), nodes.end());
       for (size_t pos = 0; pos < nodes.size() - 1; ++pos) {
-        auto iter = node_set.begin();
-
         float_t max_rem = 0.;
-        decltype(iter) max;
-        for (; iter != node_set.end(); ++iter) {
+        size_t max = -1;
+
+        for (size_t i = pos; i < nodes.size(); ++i) {
           float_t node_remaining_weight = remaining_weight;
+          auto& target = nodes[i];
           // We didn't succeed
-          node_remaining_weight -= (iter->node.success_probability * iter->node.success_time);
+          node_remaining_weight -= (target->success_probability * target->success_time);
           // Expand the rest of the weight
-          node_remaining_weight /= (1-iter->node.success_probability);
+          node_remaining_weight /= (target->failure_probability);
 
           if (node_remaining_weight > max_rem) {
             max_rem = node_remaining_weight;
-            max = iter;
+            max = i;
           }
         }
 
-        nodes[pos] = *max;
-        node_set.erase(max);
+        std::swap(nodes[pos], nodes[max]);
         remaining_weight = max_rem;
       }
-      nodes.back() = node_set.front();
-      weight = calculate_weight(nodes);
+      weight = calculate_antiweight(nodes);
 
-      if (weight >= old_weight)
-        break;
-      old_weight = weight;
-    }
+      while (true) {
+        float_t tmp_weight = weight;
 
-    while (true) {
-      for (size_t i = 0; i < nodes.size() - 2; ++i)
-        brute_nodes(nodes, i);
-      weight = brute_nodes(nodes, nodes.size() - 2);
+        for (size_t i = 0; i < nodes.size() - 2; ++i)
+          brute_nodes(nodes, i);
+        weight = brute_nodes(nodes, nodes.size() - 2);
+        if (weight == tmp_weight)
+          break;
+        tmp_weight = weight;
+      }
+
       if (weight == old_weight)
-        return;
+        break;
+
       old_weight = weight;
     }
+
+    // antiweight -> weight
+    std::reverse(nodes.begin(), nodes.end());
   }
 
   std::vector<node_info> convert_nodes(std::vector<ausearch_node> const& input) {
     std::vector<ausearch::node_info> nodes(input.size());
     for (size_t i = 0; i < input.size(); ++i)
-      nodes[i] = ausearch::node_info{.node = input[i], .index=i};
+      nodes[i] = &input[i];// /*.index=i*/};
     return nodes;
   }
 }
