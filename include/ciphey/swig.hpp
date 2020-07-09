@@ -142,11 +142,11 @@ namespace ciphey {
   inline size_t ausearch_minimise(std::vector<ausearch_node> input) {
     auto nodes = ausearch::convert_nodes(input);
     ausearch::minimise_nodes(nodes);
-//    return nodes.front().index;
+    return (size_t)(nodes.front() - input.data()) / sizeof(ausearch_node const*);
   }
 
-//  inline data xor_single_crypt(data str, ciphey::xor_single::key_t key) {
-//    xor_single::crypt(str, key);
-//    return str;
-//  }
+  inline data xor_single_crypt(data str, ciphey::xor_single::key_t key) {
+    xor_single::crypt(str, key);
+    return str;
+  }
 }
