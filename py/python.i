@@ -1,5 +1,8 @@
 %module cipheycore
 
+%ignore std::vector<ciphey::ausearch_node>::vector(size_type);
+%ignore std::vector<ciphey::ausearch_node>::resize;
+
 %include std_basic_string.i
 //%include std_string.i
 %include std_map.i
@@ -35,6 +38,7 @@ namespace std {
   %template(domain_t) set<ciphey::char_t>;
   %template(data) vector<uint8_t>;
   %template(ausearch_nodes_t) vector<ciphey::ausearch_node>;
+
 }
 
 %include "ciphey/ausearch.swig.hxx"

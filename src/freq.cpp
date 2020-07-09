@@ -8,8 +8,6 @@
 #include <set>
 #include <thread>
 
-#include <ciphey/ausearch.hpp>
-
 namespace ciphey {
   float_t run_chisq(assoc_table const& assoc, freq_t count) {
     prob_t chisq = 0;
