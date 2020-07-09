@@ -32,3 +32,14 @@ TEST(cipheyCore, vigenere) {
   ciphey::vigenere::encrypt(test_string, actual_key, ciphey::test::group());
   EXPECT_EQ(test_string, tmp_ctext);
 }
+
+TEST(cipheyCore, vigenereFail) {
+  ciphey::string_t test_string = "damn, daniel! back at it again with the black and white vans!";
+
+  auto analysis = ciphey::analyse_string(test_string, 9, ciphey::test::domain());
+
+  auto res = ciphey::vigenere_crack(analysis, ciphey::test::expected(), ciphey::test::group());
+
+  EXPECT_EQ(res.size(), 0);
+}
+

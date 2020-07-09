@@ -11,11 +11,12 @@ namespace ciphey::detail {
   template <typename Key, typename BaseKey, auto* CrackOne, typename... CrackArgs>
   struct reducer {
     // We use a shared_future so that a copy is unnecessary
-    using intermediate_res_t = std::vector<std::shared_future<std::vector<crack_result<BaseKey>>>>;
+    using intermediate_res_t = std::vector<std::vector<crack_result<BaseKey>>>;
 
     inline static void reduce(std::vector<crack_result<Key>>& v, intermediate_res_t& imdt, prob_t p_value,
                               std::vector<crack_result<BaseKey> const*>& prev_pos, size_t pos = 0) {
-      auto& target = imdt[pos].get();
+      auto& target = imdt[pos];
+
       // At the bottom layer of recursion, we fill in all the values
       if (pos == prev_pos.size()) {
          crack_result<Key> base_candidate{.key = Key(imdt.size()), .p_value = 1};
@@ -46,15 +47,16 @@ namespace ciphey::detail {
       std::vector<crack_result<Key>> ret;
       intermediate_res_t imdt(observed.size());
       // Solve as distinct substitution cyphers, in parallel
-      for (size_t i = 0; i < observed.size(); ++i)
-        imdt[i] = std::async(std::launch::async, [&, i]() -> std::vector<crack_result<BaseKey>> {
-          // We keep the p value so that we end up with too many, rather than too few
-          return CrackOne(observed[i]/*std::move(observed[i])*/, expected,
-                          std::forward<CrackArgs>(args)..., count / observed.size(), p_value);
-        });
-//      std::vector<std::vector<crack_result<BaseKey>>> tmp;
-//      for (auto& i : imdt)
-//        tmp.push_back(i.get());
+      double n_candidates = 1;
+      for (size_t i = 0; i < observed.size(); ++i) {
+        n_candidates *= (imdt[i] = CrackOne(observed[i]/*std::move(observed[i])*/, expected,
+                           std::forward<CrackArgs>(args)..., count / observed.size(), p_value)).size();
+      }
+      // This is the maximum reasonable amount before we tell someone to piss off
+      //
+      // This catches BS like passing in plaintext
+      if (n_candidates > 1e6)
+        return {};
 
       // Now we reduce the lists, and kick out any which fail our p value
       std::vector<crack_result<BaseKey> const*> indexes(observed.size() - 1);
