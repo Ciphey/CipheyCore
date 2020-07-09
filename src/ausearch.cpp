@@ -1,5 +1,6 @@
 #include <ciphey/ausearch.hpp>
 
+#include <algorithm>
 #include <list>
 #include <numeric>
 #include <utility>
