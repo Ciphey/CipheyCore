@@ -16,7 +16,10 @@ TEST(cipheyCore, ausearch) {
   };
 
   auto conv = ciphey::ausearch::convert_nodes(nodes);
-  ciphey::ausearch::minimise_nodes(conv);
-  std::cout << ciphey::ausearch::calculate_weight(conv) << std::endl;
-  abort();
+  while(true) {
+    std::random_shuffle(conv.begin(), conv.end());
+
+    ciphey::ausearch::minimise_nodes(conv);
+    std::cout << ciphey::ausearch::calculate_weight(conv) << std::endl;
+  }
 }

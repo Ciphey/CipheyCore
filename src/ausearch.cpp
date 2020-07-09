@@ -4,6 +4,8 @@
 #include <numeric>
 #include <utility>
 
+#include <iostream>
+
 namespace ciphey::ausearch {
   float_t calculate_expected_time(ausearch_node const& node) {
     return (node.success_probability * node.success_time) +
@@ -31,12 +33,30 @@ namespace ciphey::ausearch {
     return weight;
   }
 
+  float_t brute_nodes(std::vector<node_info>& nodes, size_t target) {
+    float_t best_weight = calculate_weight(nodes);
+    // Triangle swaps
+    for (size_t i = target + 1; i < nodes.size(); ++i) {
+      std::swap(nodes[i], nodes[target]);
+      auto new_weight = calculate_weight(nodes);
+      if (new_weight < best_weight)
+        best_weight = new_weight;
+      else
+        // Swap back
+        std::swap(nodes[i], nodes[target]);
+    }
+
+    return best_weight;
+  }
+
   void minimise_nodes(std::vector<node_info>& nodes) {
     if (nodes.size() < 2) return;
 
     // First, we calculate an upper bound on the weight
     float_t weight, old_weight = calculate_weight(nodes);
+    size_t n = 0;
     while (true) {
+      ++n;
       float_t remaining_weight = old_weight;
 
       // Now, iterating down the node list, trying to find the minimising value
@@ -66,7 +86,16 @@ namespace ciphey::ausearch {
       nodes.back() = node_set.front();
       weight = calculate_weight(nodes);
 
-      if (weight <= old_weight)
+      if (weight >= old_weight)
+        break;
+      old_weight = weight;
+    }
+
+    while (true) {
+      for (size_t i = 0; i < nodes.size() - 2; ++i)
+        brute_nodes(nodes, i);
+      weight = brute_nodes(nodes, nodes.size() - 2);
+      if (weight == old_weight)
         return;
       old_weight = weight;
     }
