@@ -29,9 +29,9 @@ namespace ciphey::detail {
           auto candidate_p_value = base_candidate.p_value * final_key_part.p_value;
           if (candidate_p_value < p_value)
             continue;
-          v.push_back(base_candidate);
-          v.back().key.back() = final_key_part.key;
-          v.back().p_value *= final_key_part.p_value;
+          auto& back = v.emplace_back(crack_result<Key>{ .key = base_candidate.key });
+          back.key.back() = final_key_part.key;
+          back.p_value = candidate_p_value;
         }
       }
       else {

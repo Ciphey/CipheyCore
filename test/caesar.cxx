@@ -8,7 +8,7 @@ struct test_elem {
   ciphey::caesar::key_t key;
 };
 
-std::vector<test_elem> tests {
+std::vector<test_elem> caesar_tests {
   {
     "xubbe, fbqduj",
     "hello, planet",
@@ -27,7 +27,7 @@ std::vector<test_elem> tests {
 };
 
 TEST(cipheyCore, caesarDetect) {
-  for (auto& test : tests) {
+  for (auto& test : caesar_tests) {
     auto analysis = ciphey::analyse_string(test.ctext);
     auto score = ciphey::caesar_detect(analysis, ciphey::test::expected());
     std::cout << "Scored " << score << std::endl;
@@ -36,7 +36,7 @@ TEST(cipheyCore, caesarDetect) {
 }
 
 TEST(cipheyCore, caesar) {
-  for (auto& test : tests) {
+  for (auto& test : caesar_tests) {
     ciphey::freq_table freqs;
     ciphey::freq_analysis(freqs, test.ctext);
     ciphey::prob_table probs = ciphey::freq_conv(freqs);

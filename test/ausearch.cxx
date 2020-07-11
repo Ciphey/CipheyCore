@@ -21,7 +21,7 @@ TEST(cipheyCore, ausearch) {
 
   EXPECT_LT(x, 0.306);
 
-  for (uint_fast32_t i = 0; i < 1e5; ++i) {
+  for (uint_fast32_t i = 0; i < 1e4; ++i) {
     std::random_shuffle(nodes.begin(), nodes.end());
     conv = ciphey::ausearch::convert_nodes(nodes);
     ciphey::ausearch::minimise_nodes(conv);
