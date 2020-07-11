@@ -55,7 +55,7 @@ namespace ciphey::detail {
       // This is the maximum reasonable amount before we tell someone to piss off
       //
       // This catches BS like passing in plaintext
-      if (n_candidates > 1e6)
+      if (n_candidates > 1e4)
         return {};
 
       // Now we reduce the lists, and kick out any which fail our p value
