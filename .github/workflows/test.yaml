@@ -5,4 +5,4 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: test
-      run: dir C:\hostedtoolcache\windows\Python\3.7.8\x64\
+      run: dir C:\hostedtoolcache\windows\Python\
