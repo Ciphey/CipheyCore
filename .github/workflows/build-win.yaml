@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ver: ["3.5.4", "3.6.8", "3.7.8", "3.8.3"]
+        ver: ["3.5.4", "3.6.8", "3.7.8", "3.8.4"]
 
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
       shell: cmd
       run: |
         choco upgrade chocolatey -y
-        choco install swig -y
+        choco install swig -y --version=4.0.1
     - name: Python3 pip deps
       run: |
         C:\hostedtoolcache\windows\Python\${{matrix.ver}}\x64\python -m pip install poetry setuptools
