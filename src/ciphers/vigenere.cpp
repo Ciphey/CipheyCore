@@ -37,7 +37,43 @@ namespace ciphey::vigenere {
     if (count == 0)
       return 0.;
 
-    auto stat = closeness_chisq(observed, expected, count);
-    return 1 - chisq_cdf(count - 1, stat);
+    prob_t acc = 1.;
+    for (auto& i : observed) {
+      // FIXME: work out the amount from the count, rather than just flooring it
+      acc *= caesar::detect(i, expected, count / observed.size());
+    }
+    return acc;
+
+//    auto stat = closeness_chisq(observed, expected, count);
+//    return 1-chisq_cdf(count - observed.size(), stat);
+  }
+
+  key_len_res likely_key_lens(std::string input, prob_table const& expected,
+                              domain_t const& domain, prob_t p_value) {
+    key_len_res ret;
+    ret.candidates.reserve(8);
+    auto inv_p = 1 - p_value;
+
+    // Dividing by 4 is a good guess of what is feasible to crack
+    for (size_t key_len = 2; key_len < input.size() / 8; ++key_len) {
+
+      ret.candidates.emplace_back();
+      auto& last = ret.candidates.back();
+      last.tab = windowed_freq_table(key_len);
+      // I don't think the extra write here has a significant effect of performance
+      ret.count_in_domain = freq_analysis(last.tab, input, domain);
+      auto observed = freq_conv(last.tab, ret.count_in_domain);
+
+      if (auto prob = detect(observed, expected, ret.count_in_domain); prob > inv_p) {
+        last.len = key_len;
+        last.p_value = prob;
+      }
+      else
+        ret.candidates.pop_back();
+    }
+
+    std::sort(ret.candidates.rbegin(), ret.candidates.rend(), [](auto& a, auto& b) { return a.p_value < b.p_value; });
+
+    return ret;
   }
 }

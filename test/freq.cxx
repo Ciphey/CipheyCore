@@ -36,14 +36,29 @@ TEST(cipheyCore, chisqGof) {
 
 
 TEST(cipheyCore, windowedFreq) {
-  ciphey::string_t str = "abcadcabcabc1d3";
+  ciphey::string_t str = "abcadcabcabczdy";
   ciphey::windowed_freq_table tab(3);
   ciphey::freq_analysis(tab, str);
 
   ciphey::windowed_freq_table true_table = {
-    {{'a', 4}, {'1', 1}},
+    {{'a', 4}, {'z', 1}},
     {{'b', 3}, {'d', 2}},
-    {{'c', 4}, {'3', 1}},
+    {{'c', 4}, {'y', 1}},
+  };
+
+  ASSERT_EQ(tab, true_table);
+}
+
+TEST(cipheyCore, windowedFreqDomain) {
+  ciphey::string_t str = "abc adcabca   bczdy";
+  ciphey::windowed_freq_table tab(3);
+  auto len = ciphey::freq_analysis(tab, str, ciphey::test::domain());
+  EXPECT_EQ(len, str.size() - 4);
+
+  ciphey::windowed_freq_table true_table = {
+    {{'a', 4}, {'z', 1}},
+    {{'b', 3}, {'d', 2}},
+    {{'c', 4}, {'y', 1}},
   };
 
   ASSERT_EQ(tab, true_table);

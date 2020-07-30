@@ -36,7 +36,7 @@ namespace ciphey {
   assoc_table closeness_assoc(prob_table const& observed, prob_table const& expected);
 
   void freq_analysis(freq_table&, string_t const& str);
-  size_t freq_analysis(windowed_freq_table&, string_t const& str, domain_t const& domain);
+  size_t freq_analysis(windowed_freq_table&, string_t const& str, domain_t const& domain, size_t offset = 0);
   void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset = 0);
 
   prob_table freq_conv(freq_table const& freqs, freq_t total_len);

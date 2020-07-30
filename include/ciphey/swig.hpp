@@ -120,7 +120,7 @@ namespace ciphey {
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(std::shared_ptr<windowed_analysis_res> in,
                                                                                    prob_table const& expected,
                                                                                    group_t const& group,
-                                                                                   prob_t p_value = 0.999) {
+                                                                                   prob_t p_value = default_p_value) {
     return vigenere::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
   }
   inline string_t vigenere_decrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
@@ -135,6 +135,28 @@ namespace ciphey {
     auto prob_tab = freq_conv(in->freqs, in->len);
     return vigenere::detect(prob_tab, expected, in->len);
   }
+  struct vigenere_key_len_candidate {
+    prob_t p_value;
+    size_t len;
+    std::shared_ptr<windowed_analysis_res> tab;
+  };
+  inline std::vector<vigenere_key_len_candidate> vigenere_likely_key_lens(std::string in, prob_table expected,
+                                                                          domain_t const& domain,
+                                                                          prob_t p_value = default_p_value) {
+    auto res = vigenere::likely_key_lens(in, expected, domain, p_value);
+    std::vector<vigenere_key_len_candidate> ret;
+    ret.reserve(res.candidates.size());
+    for (auto& i : res.candidates) {
+      ret.push_back({.p_value = i.p_value, .len = i.len,
+                     .tab = std::make_shared<windowed_analysis_res>(windowed_analysis_res{
+                       .freqs=std::move(i.tab),
+                       .domain=domain,
+                       .len=res.count_in_domain
+                     })});
+    }
+    return ret;
+  }
+
 
   // +-------------------------------------------------------------------------+
   // |                                AUSEARCH                                 |

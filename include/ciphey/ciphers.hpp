@@ -40,6 +40,15 @@ namespace ciphey {
                                            group_t const& group, freq_t ptext_length,
                                            prob_t p_value = 0.999);
     prob_t detect(windowed_prob_table const& observed, prob_table const& expected, freq_t count);
+    key_len_res likely_key_lens(std::string input, prob_table const& expected, domain_t const& domain,
+                                prob_t p_value = 0.75);
+    inline key_len_res likely_key_lens(std::string input, prob_table const& expected,
+                                       prob_t p_value = 0.75) {
+      domain_t domain;
+      for (auto& i : expected)
+        domain.emplace(i.first);
+      return likely_key_lens(input, expected, domain, p_value);
+    }
   }
 
   namespace xor_single {

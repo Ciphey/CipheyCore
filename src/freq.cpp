@@ -73,10 +73,6 @@ namespace ciphey {
     return ret;
   }
 
-  void freq_analysis(freq_table& tab, string_t const& str) {
-    for (auto& i : str)
-      ++tab[i];
-  }
   prob_table freq_conv(freq_table const& freqs, freq_t total_len) {
     prob_table ret;
     for (auto& i : freqs)
@@ -144,20 +140,23 @@ namespace ciphey {
 //    return acc;
 //  }
 
+  void freq_analysis(freq_table& tab, string_t const& str) {
+    for (auto& i : str)
+      ++tab[i];
+  }
   void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset) {
     for (size_t i = 0; i < str.size(); ++i)
       ++tabs[(offset + i) % tabs.size()][str[i]];
   }
 
-  size_t freq_analysis(windowed_freq_table& tabs, string_t const& str, domain_t const& domain) {
-    size_t i = 0;
+  size_t freq_analysis(windowed_freq_table& tabs, string_t const& str, domain_t const& domain, size_t offset) {
     for (auto& c : str) {
       if (domain.count(c)) {
-        ++tabs[i % tabs.size()][c];
-        ++i;
+        ++tabs[offset % tabs.size()][c];
+        ++offset;
       }
     }
-    return i;
+    return offset;
   }
 
   string_t generate_fuzz(prob_table const& tab, size_t len) {

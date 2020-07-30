@@ -16,6 +16,16 @@ namespace ciphey {
   namespace vigenere {
     /// A sequence of offsets
     using key_t = std::vector<size_t>;
+
+    struct key_len_candidate {
+      size_t len;
+      prob_t p_value;
+      windowed_freq_table tab;
+    };
+    struct key_len_res {
+      std::vector<key_len_candidate> candidates;
+      size_t count_in_domain;
+    };
   }
 
   namespace xor_single {
