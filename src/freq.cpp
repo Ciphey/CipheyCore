@@ -194,6 +194,10 @@ namespace ciphey {
   }
 
   assoc_table closeness_assoc(prob_table const& observed, prob_table const& expected) {
+    // What can we possibly do with this?
+    if (observed.size() == 0)
+      return {{.expected = 1, .observed = 0}};
+
     assoc_table assoc;
     assoc.reserve(expected.size());
     for (auto& i : expected)
@@ -207,7 +211,11 @@ namespace ciphey {
       observed_sorted.emplace_back(i.second);
     std::sort(observed_sorted.rbegin(), observed_sorted.rend());
     // Trim unobserved values
-    while (observed_sorted.back() == 0) observed_sorted.pop_back();
+    while (observed_sorted.back() == 0) {
+      observed_sorted.pop_back();
+      if (observed.size() == 0)
+        return {{.expected = 1, .observed = 0}};
+    };
 
     // Fill table with observed values, or zeroes where appropriate
     size_t i;
