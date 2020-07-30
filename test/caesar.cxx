@@ -19,6 +19,11 @@ std::vector<test_elem> caesar_tests {
     "it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.",
     11
   },
+  {
+    "uryyb zl anzr vf orr naq v yvxr qbt naq nccyr naq gerr",
+    "hello my name is bee and i like dog and apple and tree",
+    13
+  }
 //  {
 //    "te hld esp mpde zq etxpd, te hld esp hzcde zq etxpd",
 //    "it was the best of times, it was the worst of times",

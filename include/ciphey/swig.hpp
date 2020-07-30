@@ -144,10 +144,10 @@ namespace ciphey {
     size_t index;
   };
 
-  inline ausearch_res ausearch_minimise(std::vector<ausearch_node> input) {
-    auto nodes = ausearch::convert_nodes(input);
-    ausearch_res ret = {.weight = ausearch::minimise_nodes(nodes)};
-    ret.index = (size_t)(nodes.front() - input.data()) / sizeof(ausearch_node const*);
+  inline ausearch_res ausearch_minimise(std::vector<ausearch_edge> input) {
+    auto edges = ausearch::convert_edges(input);
+    ausearch_res ret = {.weight = ausearch::minimise_edges(edges)};
+    ret.index = (size_t)(edges.front() - input.data()) / sizeof(ausearch_edge const*);
     return ret;
   }
 

@@ -1,7 +1,7 @@
 %module cipheycore
 
-%ignore std::vector<ciphey::ausearch_node>::vector(size_type);
-%ignore std::vector<ciphey::ausearch_node>::resize;
+%ignore std::vector<ciphey::ausearch_edge>::vector(size_type);
+%ignore std::vector<ciphey::ausearch_edge>::resize;
 
 %include std_basic_string.i
 //%include std_string.i
@@ -37,7 +37,7 @@ namespace std {
   %template(windowed_analysis_t) shared_ptr<ciphey::windowed_analysis_res>;
   %template(domain_t) set<ciphey::char_t>;
   %template(data) vector<uint8_t>;
-  %template(ausearch_nodes_t) vector<ciphey::ausearch_node>;
+  %template(ausearch_edges_t) vector<ciphey::ausearch_edge>;
 
 }
 

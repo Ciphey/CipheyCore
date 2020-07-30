@@ -3,15 +3,11 @@
 #include <ciphey/ausearch.swig.hxx>
 
 namespace ciphey::ausearch {
-  struct node_info_old {
-    ausearch_node const*  node;
-    size_t index;
-  };
-  using node_info = ausearch_node const*;
+  using edge_info = ausearch_edge const*;
 
-  float_t calculate_weight(std::vector<node_info> const& nodes);
-  float_t calculate_weight(std::vector<ausearch_node> const& nodes);
+  float_t calculate_weight(std::vector<edge_info> const& edges);
+  float_t calculate_weight(std::vector<ausearch_edge> const& edges);
 
-  float_t minimise_nodes(std::vector<node_info>& nodes);
-  std::vector<node_info> convert_nodes(std::vector<ausearch_node> const& input);
+  float_t minimise_edges(std::vector<edge_info>& edges);
+  std::vector<edge_info> convert_edges(std::vector<ausearch_edge> const& input);
 }
