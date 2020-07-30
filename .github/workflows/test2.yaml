@@ -1,4 +1,4 @@
-name: Test
+name: Test2
 on: push
 jobs:
   test:
@@ -7,7 +7,7 @@ jobs:
     - name: test
       run: |
         mkdir /tmp/foo
-        echo hi > /tmp/foo/a
+        echo hi > /tmp/foo/b
     - name: upload
       uses: actions/upload-artifact@v2
       with:
