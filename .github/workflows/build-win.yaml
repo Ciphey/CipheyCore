@@ -2,7 +2,7 @@ name: Windows Release Build
 on:
   push: 
     tags: 
-    - v.*
+    - v*
 jobs:
   build-win64:
     name: Build Win64 package
