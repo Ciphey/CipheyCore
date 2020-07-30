@@ -1,11 +1,8 @@
 name: Windows Release Build
 on:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
+  push: 
+    tags: 
+    - v.*
 jobs:
   build-win64:
     name: Build Win64 package
