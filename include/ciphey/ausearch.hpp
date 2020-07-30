@@ -12,6 +12,6 @@ namespace ciphey::ausearch {
   float_t calculate_weight(std::vector<node_info> const& nodes);
   float_t calculate_weight(std::vector<ausearch_node> const& nodes);
 
-  void minimise_nodes(std::vector<node_info>& nodes);
+  float_t minimise_nodes(std::vector<node_info>& nodes);
   std::vector<node_info> convert_nodes(std::vector<ausearch_node> const& input);
 }
