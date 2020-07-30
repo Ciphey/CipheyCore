@@ -196,7 +196,7 @@ namespace ciphey {
   assoc_table closeness_assoc(prob_table const& observed, prob_table const& expected) {
     // What can we possibly do with this?
     if (observed.size() == 0)
-      return {{.expected = 1, .observed = 0}};
+      return {{.observed = 0, .expected = 1}};
 
     assoc_table assoc;
     assoc.reserve(expected.size());
@@ -214,7 +214,7 @@ namespace ciphey {
     while (observed_sorted.back() == 0) {
       observed_sorted.pop_back();
       if (observed.size() == 0)
-        return {{.expected = 1, .observed = 0}};
+        return {{.observed = 0, .expected = 1}};
     };
 
     // Fill table with observed values, or zeroes where appropriate
