@@ -50,8 +50,11 @@ namespace ciphey::ausearch {
     return best_weight;
   }
 
-  void minimise_nodes(std::vector<node_info>& nodes) {
-    if (nodes.size() < 2) return;
+  float_t minimise_nodes(std::vector<node_info>& nodes) {
+    if (nodes.size() == 0)
+      return std::numeric_limits<float_t>::quiet_NaN();
+    else if (nodes.size() == 1)
+      return calculate_weight(nodes);
 
     // It turns out that it is faster to optimise for antiweight (weight in reverse)
     //
@@ -108,6 +111,7 @@ namespace ciphey::ausearch {
 
     // antiweight -> weight
     std::reverse(nodes.begin(), nodes.end());
+    return calculate_weight(nodes);
   }
 
   std::vector<node_info> convert_nodes(std::vector<ausearch_node> const& input) {

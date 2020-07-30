@@ -139,6 +139,11 @@ namespace ciphey {
   // +-------------------------------------------------------------------------+
   // |                                AUSEARCH                                 |
   // +-------------------------------------------------------------------------+
+  struct ausearch_res {
+    float_t weight;
+    size_t index;
+  };
+
   inline size_t ausearch_minimise(std::vector<ausearch_node> input) {
     auto nodes = ausearch::convert_nodes(input);
     ausearch::minimise_nodes(nodes);
