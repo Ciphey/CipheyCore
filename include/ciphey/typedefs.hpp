@@ -8,7 +8,7 @@
 
 namespace ciphey {
   using char_t = char;
-  using float_t = float;
+  using float_t = double;
   using prob_t = float_t;
   using freq_t = size_t;
 

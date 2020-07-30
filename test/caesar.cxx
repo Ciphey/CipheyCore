@@ -20,8 +20,8 @@ std::vector<test_elem> caesar_tests {
     11
   },
   {
-    "uryyb zl anzr vf orr naq v yvxr qbt naq nccyr naq gerr",
-    "hello my name is bee and i like dog and apple and tree",
+    "uryyb zl anzr vf orr naq v yvxr qbt naq png",
+    "hello my name is bee and i like dog and cat",
     13
   }
 //  {
