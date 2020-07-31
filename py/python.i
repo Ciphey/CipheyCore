@@ -38,7 +38,6 @@ namespace std {
   %template(domain_t) set<ciphey::char_t>;
   %template(data) vector<uint8_t>;
   %template(ausearch_edges_t) vector<ciphey::ausearch_edge>;
-
 }
 
 %include "ciphey/ausearch.swig.hxx"
@@ -53,4 +52,5 @@ namespace ciphey {
 namespace std {
   %template(caesar_results) vector<ciphey::crack_result<ciphey::caesar::key_t>>;
   %template(vigenere_results) vector<ciphey::crack_result<ciphey::vigenere::key_t>>;
+  %template(vigenere_key_len_candidates) vector<ciphey::vigenere_key_len_candidate>;
 }
