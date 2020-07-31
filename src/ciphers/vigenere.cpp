@@ -52,7 +52,6 @@ namespace ciphey::vigenere {
                               domain_t const& domain, prob_t p_value) {
     key_len_res ret;
     ret.candidates.reserve(8);
-    auto inv_p = 1 - p_value;
 
     // Dividing by 4 is a good guess of what is feasible to crack
     for (size_t key_len = 2; key_len < input.size() / 8; ++key_len) {
@@ -64,7 +63,7 @@ namespace ciphey::vigenere {
       ret.count_in_domain = freq_analysis(last.tab, input, domain);
       auto observed = freq_conv(last.tab, ret.count_in_domain);
 
-      if (auto prob = detect(observed, expected, ret.count_in_domain); prob > inv_p) {
+      if (auto prob = detect(observed, expected, ret.count_in_domain); prob > p_value) {
         last.len = key_len;
         last.p_value = prob;
       }

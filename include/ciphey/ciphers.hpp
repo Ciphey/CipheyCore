@@ -12,7 +12,7 @@
 #include <ciphey/ciphers.swig.hxx>
 
 namespace ciphey {
-  constexpr prob_t default_p_value = 0.5;
+  constexpr prob_t default_p_value = 0.01;
 
   inverse_group_t invert_group(group_t const&);
 
@@ -38,12 +38,12 @@ namespace ciphey {
 
     std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
                                            group_t const& group, freq_t ptext_length,
-                                           prob_t p_value = 0.999);
+                                           prob_t p_value = default_p_value);
     prob_t detect(windowed_prob_table const& observed, prob_table const& expected, freq_t count);
     key_len_res likely_key_lens(std::string input, prob_table const& expected, domain_t const& domain,
-                                prob_t p_value = 0.75);
+                                prob_t p_value = default_p_value);
     inline key_len_res likely_key_lens(std::string input, prob_table const& expected,
-                                       prob_t p_value = 0.75) {
+                                       prob_t p_value = default_p_value) {
       domain_t domain;
       for (auto& i : expected)
         domain.emplace(i.first);

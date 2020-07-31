@@ -26,6 +26,9 @@ namespace ciphey {
   #include "ciphey/swig.hpp"
 %}
 
+%shared_ptr(ciphey::simple_analysis_res)
+%shared_ptr(ciphey::windowed_analysis_res)
+
 %include "ciphey/typedefs.hpp"
 
 namespace std {
@@ -33,8 +36,6 @@ namespace std {
   %template(prob_table) map<ciphey::char_t, ciphey::prob_t>;
   %template(group_t) vector<ciphey::char_t>;
   %template(viginere_key_t) vector<size_t>;
-  %template(analysis_t) shared_ptr<ciphey::simple_analysis_res>;
-  %template(windowed_analysis_t) shared_ptr<ciphey::windowed_analysis_res>;
   %template(domain_t) set<ciphey::char_t>;
   %template(data) vector<uint8_t>;
   %template(ausearch_edges_t) vector<ciphey::ausearch_edge>;

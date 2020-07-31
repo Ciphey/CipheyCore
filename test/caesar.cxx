@@ -25,6 +25,11 @@ std::vector<test_elem> caesar_tests {
     "uryyb zl anzr vf orr naq v yvxr qbt naq png",
     "hello my name is bee and i like dog and cat",
     13
+  },
+  {
+    "kvu'a il kbwlk jba kvdu aol dvvkz dov hyl lykvz (aopz zovbsk il mpul)",
+    "don't be duped cut down the woods who are erdos (this should be fine)",
+    7
   }
 //  {
 //    "te hld esp mpde zq etxpd, te hld esp hzcde zq etxpd",
@@ -50,7 +55,7 @@ TEST(cipheyCore, caesar) {
 
     auto analysis = ciphey::analyse_string(test.ctext);
 
-    auto res_collection = ciphey::caesar_crack(analysis, ciphey::test::expected(), ciphey::test::group());
+    auto res_collection = ciphey::caesar_crack(analysis, ciphey::test::expected(), ciphey::test::group(), true, -1);
     std::cout << res_collection.size() << " options" << std::endl;
 
     for (size_t i = 0; i < res_collection.size(); ++i) {
@@ -69,6 +74,45 @@ TEST(cipheyCore, caesar) {
     EXPECT_EQ(test.ctext, test.ptext);
     ciphey::caesar::encrypt(test.ctext, test.key, ciphey::test::group());
     EXPECT_EQ(test.ctext, tmp_ctext);
+
+    {
+      ciphey::freq_table freqs;
+      ciphey::freq_analysis(freqs, test.ptext);
+      ciphey::prob_table probs = ciphey::freq_conv(freqs);
+
+      float_t chi_sq_sum = 0.;
+
+      for (auto i : probs) {
+        auto exp = ciphey::test::expected().at(i.first);
+        auto chi_sq = i.second - exp;
+        chi_sq *= chi_sq / exp;
+        chi_sq *= test.ptext.size();
+        chi_sq_sum += chi_sq;
+        if (chi_sq > 0.5)
+          std::cout << (::isalnum(i.first) ? i.first : (int)i.first) << ": " << chi_sq << std::endl;
+      }
+
+      std::cout << "SUM "<< chi_sq_sum << ": " << freqs.size() << std::endl;
+      {};
+
+    }
+
+
+//    {
+//      ciphey::freq_analysis(freqs, test.ptext);
+//      ciphey::prob_table tab = ciphey::test::expected();
+//      for (auto i : freqs) {
+//        if (tab[i.first] == 0)
+//          std::cout << "Unexpected char " << (::isalnum(i.first) ? i.first : (int)i.first)
+//                    << " has freq " << i.first << std::endl;
+//      }
+
+//      auto chisq = ciphey::run_chisq(ciphey::create_assoc_table(probs, ciphey::test::expected()));
+
+//      std::cout << "Chi^2 stat: " << chisq << " with probability "
+//                << 1-ciphey::chisq_cdf(test.ptext.size(), chisq)
+//                << std::endl;
+//    }
   }
 }
 

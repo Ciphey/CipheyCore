@@ -13,25 +13,34 @@ namespace ciphey {
   // +-------------------------------------------------------------------------+
   struct simple_analysis_res {
     freq_table freqs;
-    freq_t len = 0;
+    domain_t domain;
+    freq_t len;
   };
-  inline std::shared_ptr<simple_analysis_res> analyse_string(string_t str) {
+  inline std::shared_ptr<simple_analysis_res> analyse_string(string_t str, domain_t domain = {}) {
     auto ret = std::make_shared<simple_analysis_res>();
-    freq_analysis(ret->freqs, str);
-    ret->len = str.size();
-//    ret->probs = freq_conv(ret->freqs, ret->len);
+    ret->domain = std::move(domain);
+    if (ret->domain.size())
+      ret->len = freq_analysis(ret->freqs, str, domain);
+    else {
+      freq_analysis(ret->freqs, str);
+      ret->len = str.size();
+    }
     return ret;
   }
-  inline std::shared_ptr<simple_analysis_res> start_analysis() {
-    return std::make_shared<simple_analysis_res>();
+  inline std::shared_ptr<simple_analysis_res> start_analysis(domain_t domain = {}) {
+    auto ret = std::make_shared<simple_analysis_res>();
+    ret->domain = std::move(domain);
+    ret->len = 0;
+    return ret;
   }
   inline void continue_analysis(std::shared_ptr<simple_analysis_res> target, string_t str) {
-    freq_analysis(target->freqs, str);
-    target->len += str.size();
+    if (target->domain.size())
+      target->len += freq_analysis(target->freqs, str, target->domain);
+    else {
+      freq_analysis(target->freqs, str);
+      target->len += str.size();
+    }
   }
-//  inline void finish_analysis(std::shared_ptr<simple_analysis_res> target) {
-//    target->probs = freq_conv(target->freqs, target->len);
-//  }
 
   // +-------------------------------------------------------------------------+
   // |                           WINDOWED ANALYSIS                             |
@@ -39,33 +48,37 @@ namespace ciphey {
   struct windowed_analysis_res {
     windowed_freq_table freqs;
     domain_t domain;
-    freq_t len = 0;
+    freq_t len;
   };
   inline std::shared_ptr<windowed_analysis_res> analyse_string(string_t str, size_t window_size,
                                                                domain_t domain = {}) {
     auto ret = std::make_shared<windowed_analysis_res>();
     ret->domain = std::move(domain);
     ret->freqs.resize(window_size);
-    ret->len = str.size();
     // If we have no domain, then treat everything as in the domain
-    if (ret->domain.size() == 0)
+    if (ret->domain.size() == 0) {
       freq_analysis(ret->freqs, str);
+      ret->len = str.size();
+    }
     else
-      ret->len -= freq_analysis(ret->freqs, str, ret->domain);
+      ret->len = freq_analysis(ret->freqs, str, ret->domain);
 //    ret->probs = freq_conv(ret->freqs, ret->len);
     return ret;
   }
   inline std::shared_ptr<windowed_analysis_res> start_analysis(size_t window_size, domain_t domain = {}) {
     auto ret = std::make_shared<windowed_analysis_res>();
-    ret->domain = domain;
+    ret->domain = std::move(domain);
+    ret->len = 0;
     return ret;
   }
   inline void continue_analysis(std::shared_ptr<windowed_analysis_res> target, string_t str) {
-    if (target->domain.size())
+    if (target->domain.size()) {
       freq_analysis(target->freqs, str);
+      target->len += str.size();
+    }
     else
-      freq_analysis(target->freqs, str, target->domain);
-    target->len += str.size();
+      target->len += freq_analysis(target->freqs, str, target->domain);
+
   }
 //  inline void finish_analysis(std::shared_ptr<windowed_analysis_res> target) {
 //    target->probs = freq_conv(target->freqs, target->len);
@@ -147,11 +160,12 @@ namespace ciphey {
     std::vector<vigenere_key_len_candidate> ret;
     ret.reserve(res.candidates.size());
     for (auto& i : res.candidates) {
-      ret.push_back({.p_value = i.p_value, .len = i.len,
-                     .tab = std::make_shared<windowed_analysis_res>(windowed_analysis_res{
-                       .freqs=std::move(i.tab),
-                       .domain=domain,
-                       .len=res.count_in_domain
+      ret.push_back({
+                      .p_value = i.p_value, .len = i.len,
+                      .tab = std::make_shared<windowed_analysis_res>(windowed_analysis_res{
+                        .freqs=std::move(i.tab),
+                        .domain=domain,
+                        .len=res.count_in_domain
                      })});
     }
     return ret;

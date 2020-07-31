@@ -144,6 +144,16 @@ namespace ciphey {
     for (auto& i : str)
       ++tab[i];
   }
+  size_t freq_analysis(freq_table& tab, string_t const& str, domain_t const& domain) {
+    size_t n = 0;
+    for (auto& i : str) {
+      if (domain.count(i)) {
+        ++tab[i];
+        ++n;
+      }
+    }
+    return n;
+  }
   void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset) {
     for (size_t i = 0; i < str.size(); ++i)
       ++tabs[(offset + i) % tabs.size()][str[i]];

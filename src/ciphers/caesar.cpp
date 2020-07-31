@@ -30,15 +30,16 @@ namespace ciphey::caesar {
       throw std::invalid_argument{"Empty group given"};
 
     std::vector<crack_result<key_t>> ret;
-    auto inv_p = 1-p_value;
+
+    // We can use the p-value directly, as H_0 is that it *is* caesar
 
     // Check identity
-    if (auto key_p_value = gof_test(create_assoc_table(observed, expected), count); key_p_value > inv_p)
+    if (auto key_p_value = gof_test(create_assoc_table(observed, expected), count); key_p_value > p_value)
       ret.push_back({.key = 0, .p_value = key_p_value });
 
     rotate_prob_table(observed, group);
     for (key_t key = 1; key < group.size(); ++key, rotate_prob_table(observed, group))
-      if (auto key_p_value = gof_test(create_assoc_table(observed, expected), count); key_p_value > inv_p)
+      if (auto key_p_value = gof_test(create_assoc_table(observed, expected), count); key_p_value > p_value)
         ret.push_back({.key = key, .p_value = key_p_value });
 
     sort_crack_result(ret);
