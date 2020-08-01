@@ -119,7 +119,6 @@ namespace ciphey {
     return str;
   }
   inline prob_t caesar_detect(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
-    auto tab = in->freqs;
     return caesar::detect(freq_conv(in->freqs, in->len), expected, in->len);
   }
 

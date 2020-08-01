@@ -64,7 +64,6 @@ namespace ciphey::caesar {
   prob_t detect(prob_table const& observed, prob_table const& expected, freq_t count) {
     if (count == 0)
       return 0.;
-    auto stat = closeness_chisq(observed, expected, count);
-    return 1 - chisq_cdf(count - 1, stat);
+    return closeness_test(observed, expected, count);
   }
 }

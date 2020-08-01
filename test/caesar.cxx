@@ -55,7 +55,7 @@ TEST(cipheyCore, caesar) {
 
     auto analysis = ciphey::analyse_string(test.ctext, ciphey::test::domain());
 
-    auto res_collection = ciphey::caesar_crack(analysis, ciphey::test::expected(), ciphey::test::group(), true);
+    auto res_collection = ciphey::caesar_crack(analysis, ciphey::test::expected(), ciphey::test::group());
     std::cout << res_collection.size() << " options" << std::endl;
 
     for (size_t i = 0; i < res_collection.size(); ++i) {

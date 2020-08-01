@@ -19,13 +19,17 @@ namespace ciphey {
   /// @param count If set to 1 (which is default), no normalisation will occur.
   ///              Otherwise normalises the table to this count (by multiplying by count)
   float_t run_chisq(assoc_table const& assoc, freq_t count = 1);
-  float_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count);
-  float_t closeness_chisq(windowed_prob_table const& observed, prob_table const& expected, freq_t count);
   prob_t chisq_cdf(freq_t dof, float_t up_to);
   /// Goodness-of-fit test
   ///
   /// @returns the probability that, given the real distribution is the expected one, something at least this uncorrelated arises
   prob_t gof_test(assoc_table const& assoc, freq_t count);
+  /// Closeness test
+  ///
+  /// Used to see how well two distributions match, if we pair up the most liekly values,
+  /// then the second most likely, and so on
+  prob_t closeness_test(prob_table const& observed, prob_table const& expected, freq_t count);
+  prob_t closeness_test(windowed_prob_table const& observed, prob_table const& expected, freq_t count);
 
   string_t generate_fuzz(prob_table const& tab, size_t len);
 

@@ -99,10 +99,9 @@ TEST(cipheyCore, simpleCloseness) {
   ciphey::prob_table exp  = {{'c', 0.5}, {'b', 0.2}, {'a', 0.3}};
   ciphey::prob_table exp2 = {{'c', 0.4}, {'b', 0.3}, {'a', 0.3}};
 
-  EXPECT_EQ(ciphey::closeness_chisq(obs, exp, 10), 0);
+  EXPECT_EQ(ciphey::closeness_test(obs, exp, 10), 1);
 
-  auto res = ciphey::closeness_chisq(obs, exp2, 10);
-  EXPECT_LE(::abs(res - 0.58), 0.01);
+  EXPECT_GT(ciphey::closeness_test(obs, exp2, 10), 0);
 }
 
 TEST(cipheyCore, entropy) {

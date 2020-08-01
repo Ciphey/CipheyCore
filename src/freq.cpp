@@ -245,39 +245,46 @@ namespace ciphey {
     return assoc;
   }
 
-  float_t closeness_chisq(prob_table const& observed, prob_table const& expected, freq_t count) {
+  prob_t closeness_test(prob_table const& observed, prob_table const& expected, freq_t count) {
     // Quick bypass to avoid more filling than we have to
     if (observed.size() > expected.size())
       return 0;
 
     auto assoc = closeness_assoc(observed, expected);
-    return run_chisq(assoc, count);
+    auto stat = run_chisq(assoc, count);
+
+    return 1 - chisq_cdf(assoc.size() - 1, stat);
   }
 
-  float_t closeness_chisq(windowed_prob_table const& observed, prob_table const& expected, freq_t count) {
-    std::vector<std::future<float_t>> asyncs(observed.size());
+  prob_t closeness_test(windowed_prob_table const& observed, prob_table const& expected, freq_t count) {
+    struct imdt_res_t {
+      size_t tab_size;
+      float_t chi_sq;
+    };
+
+    std::vector<std::future<imdt_res_t>> asyncs(observed.size());
 
     for (size_t i = 0; i < observed.size(); ++i) {
-      asyncs[i] = std::async(std::launch::async, [&, i]() -> float_t {
-        // Quick bypass to avoid more filling than we have to
-        if (observed.size() > expected.size())
-          return 0;
-
+      asyncs[i] = std::async(std::launch::async, [&, i]() -> imdt_res_t {
         auto assoc = closeness_assoc(observed[i], expected);
 
         // We can normalise at the end for efficiency
-        return run_chisq(assoc);
+        return {.tab_size = assoc.size(), .chi_sq = run_chisq(assoc)};
       });
     }
 
-    float_t sum;
-    for (auto& i : asyncs)
-      sum += i.get();
+    float_t stat = 0;
+    size_t total_tab_len = 0;
+    for (auto& i : asyncs) {
+      auto res = i.get();
+      total_tab_len += res.tab_size;
+      stat += res.chi_sq;
+    }
 
     // Finally, we can normalise
-    sum *= count;
+    stat *= count;
 
-    return sum;
+    return 1 - chisq_cdf(total_tab_len - 1, stat);
   }
 
   float_t calculate_entropy(std::map<uint8_t, freq_t> const& freqs, size_t len) {
