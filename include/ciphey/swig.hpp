@@ -20,7 +20,7 @@ namespace ciphey {
     auto ret = std::make_shared<simple_analysis_res>();
     ret->domain = std::move(domain);
     if (ret->domain.size())
-      ret->len = freq_analysis(ret->freqs, str, domain);
+      ret->len = freq_analysis(ret->freqs, str, ret->domain);
     else {
       freq_analysis(ret->freqs, str);
       ret->len = str.size();
@@ -106,12 +106,8 @@ namespace ciphey {
   // +-------------------------------------------------------------------------+
   inline std::vector<ciphey::crack_result<ciphey::caesar::key_t>> caesar_crack(std::shared_ptr<simple_analysis_res> in,
                                                                                prob_table expected, group_t group,
-                                                                               bool do_filter_missing = true,
                                                                                prob_t p_value = default_p_value) {
-    auto tab = in->freqs;
-    size_t n_removed = filter_missing(tab, expected);
-    size_t new_len = in->len - n_removed;
-    return caesar::crack(freq_conv(tab, new_len), expected, group, new_len, p_value);
+    return caesar::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
   }
 
   inline string_t caesar_decrypt(string_t str, ciphey::caesar::key_t key, group_t group) {
@@ -124,10 +120,7 @@ namespace ciphey {
   }
   inline prob_t caesar_detect(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
     auto tab = in->freqs;
-    size_t n_removed = filter_missing(tab, expected);
-    size_t new_len = in->len - n_removed;
-    auto prob_tab = freq_conv(tab, new_len);
-    return caesar::detect(prob_tab, expected, new_len);
+    return caesar::detect(freq_conv(in->freqs, in->len), expected, in->len);
   }
 
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(std::shared_ptr<windowed_analysis_res> in,
