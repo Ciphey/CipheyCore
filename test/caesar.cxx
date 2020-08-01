@@ -94,7 +94,6 @@ TEST(cipheyCore, caesar) {
 
       std::cout << "SUM "<< chi_sq_sum << ": " << freqs.size() << std::endl;
       {};
-
     }
 
 

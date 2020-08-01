@@ -174,6 +174,7 @@ namespace ciphey {
 
   inline ausearch_res ausearch_minimise(std::vector<ausearch_edge> input) {
     auto edges = ausearch::convert_edges(input);
+
     ausearch_res ret = {.weight = ausearch::minimise_edges(edges)};
     ret.index = (size_t)(edges.front() - input.data()) / sizeof(ausearch_edge const*);
     return ret;

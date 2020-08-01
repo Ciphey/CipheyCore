@@ -7,7 +7,13 @@
 
 #include <iostream>
 
+namespace std {
+  template class std::vector<ciphey::ausearch::edge_info>;
+}
+
 namespace ciphey::ausearch {
+
+
 //  float_t calculate_expected_time(ausearch_edge const& edge) {
 //    return (edge.success_probability * edge.success_time) +
 //           ((1-edge.success_probability) * edge.failure_time);
@@ -61,7 +67,7 @@ namespace ciphey::ausearch {
     // This is because weight is iteratively calculated from the end,
     // and most machines run faster when iterating *forwards*
 
-    // First, we calculate an upper bound on the weight
+    // First, we calculate a lower bound on the weight
     float_t weight, old_weight = calculate_antiweight(edges);
     size_t n = 0;
     while (true) {
@@ -70,7 +76,7 @@ namespace ciphey::ausearch {
 
       // Now, iterating down the edge list, trying to find the minimising value
       for (size_t pos = 0; pos < edges.size() - 1; ++pos) {
-        float_t max_rem = 0.;
+        float_t max_rem = -std::numeric_limits<float_t>::infinity();
         size_t max = -1;
 
         for (size_t i = pos; i < edges.size(); ++i) {
@@ -79,7 +85,11 @@ namespace ciphey::ausearch {
           // We didn't succeed
           edge_remaining_weight -= (target->success_probability * target->success_time);
           // Expand the rest of the weight
-          edge_remaining_weight /= (target->failure_probability);
+          if (target->failure_probability == 0)
+            // If we cannot fail, then there can be no remaining antiweight
+            edge_remaining_weight = 0;
+          else
+            edge_remaining_weight /= (target->failure_probability);
 
           if (edge_remaining_weight > max_rem) {
             max_rem = edge_remaining_weight;
