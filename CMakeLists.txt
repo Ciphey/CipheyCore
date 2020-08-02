@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(CipheyCore VERSION 0.2.8)
+project(CipheyCore VERSION 0.2.9)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -20,7 +20,7 @@ else()
   target_compile_features(ciphey_core PUBLIC cxx_std_20)
 endif()
 
-target_link_libraries(ciphey_core PUBLIC Boost::boost)
+target_link_libraries(ciphey_core PUBLIC Boost::boost Python3::Module)
 
 add_library(Ciphey::core ALIAS ciphey_core)
 
@@ -43,6 +43,7 @@ if (CIPHEY_CORE_PYTHON)
 else()
   find_package(Python3 REQUIRED COMPONENTS Development)
   include_directories(${Python3_INCLUDE_DIRS})
+  set(ciphey_py_extra Python3::Module)
 endif()
 
 find_package(SWIG REQUIRED)
@@ -57,6 +58,12 @@ swig_add_library(ciphey_core_py
   OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}"
   OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
   SOURCES ${PYTHON_SWIG})
+
+# Apple needs ".so", rather than its default ".dylib"
+if (APPLE)
+  set_target_properties(ciphey_core_py PROPERTIES SUFFIX ".so")
+endif()
+
 target_link_libraries(ciphey_core_py Ciphey::core ${ciphey_py_extra})
 add_custom_command(TARGET ciphey_core_py PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/cipheycore"
