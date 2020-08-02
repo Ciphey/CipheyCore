@@ -43,7 +43,7 @@ if (CIPHEY_CORE_PYTHON)
 else()
   find_package(Python3 REQUIRED COMPONENTS Development)
   include_directories(${Python3_INCLUDE_DIRS})
-  set(ciphey_py_extra Python3::Module)
+  set(ciphey_py_extra Python3::Python)
 endif()
 
 find_package(SWIG REQUIRED)
