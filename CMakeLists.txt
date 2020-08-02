@@ -20,7 +20,7 @@ else()
   target_compile_features(ciphey_core PUBLIC cxx_std_20)
 endif()
 
-target_link_libraries(ciphey_core PUBLIC Boost::boost Python3::Module)
+target_link_libraries(ciphey_core PUBLIC Boost::boost)
 
 add_library(Ciphey::core ALIAS ciphey_core)
 
