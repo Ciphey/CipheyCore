@@ -29,8 +29,8 @@ jobs:
         mkdir build && cd build
         # Seperate out for variable expansion
         export CIPHEY_PYTHON_INCLUDE=/usr/local/Cellar/python${{matrix.ver}}/*/Frameworks/Python.framework/Versions/3*
-        cmake .. -DCIPHEY_CORE_TEST=OFF -DCIPHEY_CORE_PYTHON=$(echo $CIPHEY_PYTHON_INCLUDE)
-        cmake --build . --config Release
+        cmake .. -DCIPHEY_CORE_TEST=OFF -DCIPHEY_CORE_PYTHON=$(echo $CIPHEY_PYTHON_INCLUDE) -DCMAKE_BUILD_TYPE=Release
+        cmake --build .
     - name: Create python package
       run: |
         cd build
