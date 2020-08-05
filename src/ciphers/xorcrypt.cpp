@@ -52,4 +52,16 @@ namespace ciphey::xorcrypt {
     for (size_t i = 0; i < str.size(); ++i)
       str[i] ^= key[i % key.size()];
   }
+
+  prob_t detect(windowed_prob_table const& observed, prob_table const& expected, freq_t count) {
+    if (count == 0)
+      return 0.;
+
+    prob_t acc = 1.;
+    for (auto& i : observed) {
+      // FIXME: work out the amount from the count, rather than just flooring it
+      acc *= xor_single::detect(i, expected, count / observed.size());
+    }
+    return acc;
+  }
 }
