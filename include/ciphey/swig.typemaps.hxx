@@ -25,16 +25,16 @@ namespace ciphey::swig {
 
   template<typename StrContainerWithOptRef, typename Arg>
   inline void str_out(Arg& target, StrContainerWithOptRef b) noexcept {
-    target = PyBytes_FromStringAndSize(b.data(), b.size());
+    target = PyUnicode_DecodeUTF8(b.data(), b.size(), nullptr);
   }
 
   template<typename StrContainer, typename Arg>
   inline void str_in(StrContainer& target, Arg const& b) {
     Py_ssize_t len;
-    char* ptr;
+    const char* ptr;
     // Does not pass ownership
-    if (PyBytes_AsStringAndSize(b, &ptr, &len) < 0)
-      throw std::invalid_argument("Bad PyBytes");
+    if ((ptr = PyUnicode_AsUTF8AndSize(b, &len)) == nullptr)
+      throw std::invalid_argument("Bad PyUnicode");
     target = StrContainer{ptr, ptr + len};
   }
 }
