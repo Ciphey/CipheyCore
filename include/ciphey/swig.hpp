@@ -16,7 +16,7 @@ namespace ciphey {
     domain_t domain;
     freq_t len;
   };
-  inline std::shared_ptr<simple_analysis_res> analyse_string(string_t str, domain_t domain = {}) {
+  inline std::shared_ptr<simple_analysis_res> analyse_string(string_ref_t str, domain_t domain = {}) {
     auto ret = std::make_shared<simple_analysis_res>();
     ret->domain = std::move(domain);
     if (ret->domain.size())
@@ -27,19 +27,29 @@ namespace ciphey {
     }
     return ret;
   }
+  inline std::shared_ptr<simple_analysis_res> analyse_bytes(bytes_const_ref_t str) {
+    auto ret = std::make_shared<simple_analysis_res>();
+    freq_analysis(ret->freqs, string_const_ref_t{reinterpret_cast<char_t const*>(str.data()), str.size()});
+    ret->len = str.size();
+    return ret;
+  }
   inline std::shared_ptr<simple_analysis_res> start_analysis(domain_t domain = {}) {
     auto ret = std::make_shared<simple_analysis_res>();
     ret->domain = std::move(domain);
     ret->len = 0;
     return ret;
   }
-  inline void continue_analysis(std::shared_ptr<simple_analysis_res> target, string_t str) {
+  inline void continue_analysis(std::shared_ptr<simple_analysis_res> target, string_const_ref_t str) {
     if (target->domain.size())
       target->len += freq_analysis(target->freqs, str, target->domain);
     else {
       freq_analysis(target->freqs, str);
       target->len += str.size();
     }
+  }
+  inline void continue_analysis(std::shared_ptr<simple_analysis_res> target, bytes_const_ref_t str) {
+    freq_analysis(target->freqs, string_const_ref_t{reinterpret_cast<char_t const*>(str.data()), str.size()});
+    target->len += str.size();
   }
 
   // +-------------------------------------------------------------------------+
@@ -65,13 +75,21 @@ namespace ciphey {
 //    ret->probs = freq_conv(ret->freqs, ret->len);
     return ret;
   }
+  inline std::shared_ptr<windowed_analysis_res> analyse_bytes(bytes_const_ref_t str, size_t window_size,
+                                                               domain_t domain = {}) {
+    auto ret = std::make_shared<windowed_analysis_res>();
+    ret->freqs.resize(window_size);
+    ret->len = str.size();
+    freq_analysis(ret->freqs, string_const_ref_t{reinterpret_cast<char_t const*>(str.data()), str.size()});
+    return ret;
+  }
   inline std::shared_ptr<windowed_analysis_res> start_analysis(size_t window_size, domain_t domain = {}) {
     auto ret = std::make_shared<windowed_analysis_res>();
     ret->domain = std::move(domain);
     ret->len = 0;
     return ret;
   }
-  inline void continue_analysis(std::shared_ptr<windowed_analysis_res> target, string_t str) {
+  inline void continue_analysis(std::shared_ptr<windowed_analysis_res> target, string_const_ref_t str) {
     if (target->domain.size()) {
       freq_analysis(target->freqs, str);
       target->len += str.size();
@@ -141,7 +159,7 @@ namespace ciphey {
     size_t len;
     std::shared_ptr<windowed_analysis_res> tab;
   };
-  inline std::vector<vigenere_key_len_candidate> vigenere_likely_key_lens(string_t in, prob_table expected,
+  inline std::vector<vigenere_key_len_candidate> vigenere_likely_key_lens(string_const_ref_t in, prob_table expected,
                                                                           domain_t const& domain,
                                                                           prob_t p_value = default_p_value) {
     auto res = vigenere::likely_key_lens(in, expected, domain, p_value);
@@ -159,6 +177,37 @@ namespace ciphey {
     return ret;
   }
 
+  inline std::vector<ciphey::crack_result<ciphey::xor_single::key_t>> xor_single_crack(std::shared_ptr<simple_analysis_res> in,
+                                                                                       prob_table const& expected,
+                                                                                       prob_t p_value = default_p_value) {
+    return xor_single::crack(freq_conv(in->freqs, in->len), expected, in->len, p_value);
+  }
+
+  inline void xor_single_decrypt(bytes_ref_t str, ciphey::caesar::key_t key) {
+    xor_single::decrypt(str, key);
+  }
+  inline void xor_single_encrypt(bytes_ref_t str, ciphey::caesar::key_t key) {
+    xor_single::encrypt(str, key);
+  }
+  inline prob_t xor_single_detect(std::shared_ptr<simple_analysis_res> in, prob_table const& expected) {
+    return xor_single::detect(freq_conv(in->freqs, in->len), expected, in->len);
+  }
+
+  inline std::vector<ciphey::crack_result<ciphey::xorcrypt::key_t>> xorcrypt_crack(std::shared_ptr<windowed_analysis_res> in,
+                                                                                   prob_table expected,
+                                                                                   prob_t p_value = default_p_value) {
+    return xorcrypt::crack(freq_conv(in->freqs, in->len), expected, in->len, p_value);
+  }
+  inline void xorcrypt_decrypt(bytes_ref_t str, bytes_const_ref_t key) {
+    xorcrypt::decrypt(str, key);
+  }
+  inline void xorcrypt_encrypt(bytes_ref_t str, bytes_const_ref_t key) {
+    xorcrypt::encrypt(str, key);
+  }
+  inline prob_t xorcrypt_detect(std::shared_ptr<windowed_analysis_res> in, prob_table expected) {
+    auto prob_tab = freq_conv(in->freqs, in->len);
+    return xorcrypt::detect(prob_tab, expected, in->len);
+  }
   inline size_t xorcrypt_guess_len(bytes_const_ref_t in) {
     return xorcrypt::guess_len(in);
   }
@@ -178,9 +227,5 @@ namespace ciphey {
     ausearch_res ret = {.weight = ausearch::minimise_edges(edges)};
     ret.index = (size_t)(edges.front() - input.data()) / sizeof(ausearch_edge const*);
     return ret;
-  }
-
-  inline void xor_single_crypt(bytes_ref_t str, ciphey::xor_single::key_t key) {
-    xor_single::crypt(str, key);
   }
 }

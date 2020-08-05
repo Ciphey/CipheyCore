@@ -15,7 +15,8 @@ namespace ciphey {
 
   using string_t = std::basic_string<char_t>;
   using string_ref_t = nonstd::span<char_t>;
-  using string_const_ref_t = std::basic_string_view<char_t>;
+  // Not using string_view because casting is painful
+  using string_const_ref_t = nonstd::span<const char>;
 
   using bytes_t = std::vector<uint8_t>;
   using bytes_ref_t = nonstd::span<uint8_t>;

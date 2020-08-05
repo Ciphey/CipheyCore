@@ -10,7 +10,7 @@ struct test_elem {
   ciphey::caesar::key_t key;
 };
 
-std::vector<test_elem> caesar_tests {
+static std::vector<test_elem> caesar_tests {
   {
     "xubbe, fbqduj",
     "hello, planet",

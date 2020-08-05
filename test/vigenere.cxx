@@ -8,7 +8,7 @@ struct vigenere_test_elem {
   ciphey::vigenere::key_t key;
 };
 
-std::vector<vigenere_test_elem> vigenere_tests {
+static std::vector<vigenere_test_elem> vigenere_tests {
   {
     "odxo yh uvtpmhx. vapq bqddv mja",
     "call me ishmael. some years ago",

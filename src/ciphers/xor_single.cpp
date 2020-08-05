@@ -12,7 +12,8 @@ namespace ciphey::xor_single {
     // We need to swap the XOR pairs, but we also need to avoid swapping back
     //
     // HACK: There must be a better way than this
-    std::array<bool, 256> is_on = {false};
+    std::array<bool, 256> is_on;
+    std::fill(is_on.begin(), is_on.end(), false);
     for (size_t i = 0; i < 256; ++i) {
       if (!std::exchange(is_on[i], true)) {
         auto i_xor = i ^ key;
@@ -22,7 +23,7 @@ namespace ciphey::xor_single {
     }
   }
 
-  void crypt(bytes_ref_t& str, key_t const& key) {
+  void crypt(bytes_ref_t str, key_t key) {
     for (auto& i : str)
       i ^= key;
   }
@@ -32,13 +33,30 @@ namespace ciphey::xor_single {
 
     for (uint8_t key = 1; key != 0; ++key) {
       // Undo last one, and add our one (the -1'th term is 0, so no effect!)
-      xor_prob_table(observed, key ^ (key - 1));
-      if (auto key_p_value = gof_test(create_assoc_table(observed, expected), 256); key_p_value > p_value)
+      //
+      // TODO: actually do this with a rotation
+//      xor_prob_table(observed, key ^ (key - 1));
+      prob_table new_observed;
+      for (auto& i : observed)
+        new_observed[i.first^key] = i.second;
+      if (key == 'c')
+        ::printf("");
+
+      if (auto key_p_value = gof_test(create_assoc_table(new_observed, expected), count); key_p_value > p_value)
         ret.push_back({.key = key, .p_value = key_p_value });
+      else {
+        ::printf("");
+      }
     }
 
     sort_crack_result(ret);
 
     return ret;
+  }
+
+  prob_t detect(prob_table const& observed, prob_table const& expected, freq_t count) {
+    if (count == 0)
+      return 0.;
+    return closeness_test(observed, expected, count);
   }
 }

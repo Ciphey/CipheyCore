@@ -55,9 +55,9 @@ namespace ciphey {
     };
 
     std::map<char_t, key_elem> keys;
+    // We can use index notation for this, as that gets default constructed
     for (auto& i : expected)
       keys[i.first].exp_val = i.second;
-    // We can use index notation for this, as that gets default constructed
     for (auto& i : observed)
       keys[i.first].obs_val = i.second;
 

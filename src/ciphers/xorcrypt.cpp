@@ -43,12 +43,12 @@ namespace ciphey::xorcrypt {
     return best_candidate.first;
   }
 
-  std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
-                                         freq_t count, prob_t p_value) {
+  std::vector<crack_result<bytes_t>> crack(const windowed_prob_table& observed, prob_table const& expected,
+                                           freq_t count, prob_t p_value) {
     return detail::reducer<key_t, xor_single::key_t, xor_single::crack>::crack(observed, expected, count, p_value);
   }
 
-  void crypt(bytes_t& str, key_t const& key) {
+  void crypt(bytes_ref_t str, bytes_const_ref_t key) {
     for (size_t i = 0; i < str.size(); ++i)
       str[i] ^= key[i % key.size()];
   }

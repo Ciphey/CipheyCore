@@ -52,22 +52,25 @@ namespace ciphey {
   }
 
   namespace xor_single {
-    void crypt(bytes_ref_t str, key_t const& key);
+    void crypt(bytes_ref_t str, key_t key);
     inline void encrypt(bytes_ref_t str, key_t const& key) { crypt(str, key); }
     inline void decrypt(bytes_ref_t str, key_t const& key) { crypt(str, key); }
 
     std::vector<crack_result<key_t>> crack(prob_table observed, prob_table const& expected,
                                            freq_t ptext_length, prob_t p_value = default_p_value);
+    prob_t detect(const prob_table& observed, prob_table const& expected, freq_t count);
   }
 
   namespace xorcrypt {
-    void crypt(bytes_ref_t& str, key_t const& key);
-    inline void encrypt(bytes_ref_t& str, key_t const& key) { crypt(str, key); }
-    inline void decrypt(bytes_ref_t& str, key_t const& key) { crypt(str, key); }
+    void crypt(bytes_ref_t str, bytes_const_ref_t key);
+    inline void encrypt(bytes_ref_t str, bytes_const_ref_t key) { crypt(str, key); }
+    inline void decrypt(bytes_ref_t str, bytes_const_ref_t key) { crypt(str, key); }
 
+    // A result of 1 means that it is not likely to be xorcrypt
     size_t guess_len(bytes_const_ref_t input);
 
-    std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
-                                           freq_t ptext_length, prob_t p_value = default_p_value);
+    std::vector<crack_result<bytes_t>> crack(windowed_prob_table const& observed, prob_table const& expected,
+                                             freq_t ptext_length, prob_t p_value = default_p_value);
+    prob_t detect(windowed_prob_table const& observed, prob_table const& expected, freq_t count);
   }
 }
