@@ -140,11 +140,11 @@ namespace ciphey {
 //    return acc;
 //  }
 
-  void freq_analysis(freq_table& tab, string_t const& str) {
+  void freq_analysis(freq_table& tab, string_const_ref_t const& str) {
     for (auto& i : str)
       ++tab[i];
   }
-  size_t freq_analysis(freq_table& tab, string_t const& str, domain_t const& domain) {
+  size_t freq_analysis(freq_table& tab, string_const_ref_t const& str, domain_t const& domain) {
     size_t n = 0;
     for (auto& i : str) {
       if (domain.count(i)) {
@@ -154,12 +154,12 @@ namespace ciphey {
     }
     return n;
   }
-  void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset) {
+  void freq_analysis(windowed_freq_table& tabs, string_const_ref_t const& str, size_t offset) {
     for (size_t i = 0; i < str.size(); ++i)
       ++tabs[(offset + i) % tabs.size()][str[i]];
   }
 
-  size_t freq_analysis(windowed_freq_table& tabs, string_t const& str, domain_t const& domain, size_t offset) {
+  size_t freq_analysis(windowed_freq_table& tabs, string_const_ref_t const& str, domain_t const& domain, size_t offset) {
     for (auto& c : str) {
       if (domain.count(c)) {
         ++tabs[offset % tabs.size()][c];
@@ -300,7 +300,7 @@ namespace ciphey {
     return ret;
   }
 
-  float_t information_content(data const& b) {
+  float_t information_content(bytes_const_ref_t b) {
     // TODO:
     // I would prefer something more empirical,
     // rather than just brute forcing the token size
@@ -327,6 +327,46 @@ namespace ciphey {
                       calculate_entropy(pair_freqs,   b.size() * 4) / 2,
                       calculate_entropy(bit_freqs,    b.size() * 8)
                     }) * b.size();
+  }
+
+  freq_t hamming_weight(uint8_t byte) {
+    /// Precomputed hamming weight table for each byte
+    static std::array<freq_t, 256> weights {
+      0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
+      1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+      1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+      2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+      1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+      2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+      2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+      3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+      1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+      2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+      2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+      3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+      2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+      3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+      3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+      4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8,
+    };
+
+    return weights[byte];
+  }
+
+  freq_t hamming_weight(bytes_const_ref_t b) {
+    freq_t ret = 0;
+    for (auto i : b)
+      ret += hamming_weight(i);
+    return ret;
+  }
+
+  freq_t hamming_distance(bytes_const_ref_t x, bytes_const_ref_t y) {
+    if (x.size() != y.size())
+      throw std::invalid_argument("Lengths must be the same for hamming distance");
+    freq_t ret = 0;
+    for (size_t i = 0; i < x.size(); ++i)
+      ret += hamming_weight(x[i] ^ y[i]);
+    return ret;
   }
 }
 

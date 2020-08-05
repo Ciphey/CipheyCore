@@ -47,12 +47,12 @@ namespace ciphey::caesar {
     return ret;
   }
 
-  void decrypt(string_t& str, key_t const& key, group_t const& group) {
+  void decrypt(string_ref_t str, key_t const& key, group_t const& group) {
     // We can just encrypt with the inverse key
     encrypt(str, group.size() - key, group);
   }
 
-  void encrypt(string_t& str, key_t const& key, group_t const& group) {
+  void encrypt(string_ref_t str, key_t const& key, group_t const& group) {
     auto inverse = invert_group(group);
 
     for (auto& i : str)

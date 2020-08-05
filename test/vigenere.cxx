@@ -57,9 +57,9 @@ TEST(cipheyCore, vigenere) {
     found:
 
     auto tmp_ctext = test.ctext;
-    ciphey::vigenere::decrypt(tmp_ctext, actual_key, ciphey::test::group());
+    ciphey::vigenere::decrypt({tmp_ctext.data(), tmp_ctext.size()}, actual_key, ciphey::test::group());
     EXPECT_EQ(tmp_ctext, test.ptext);
-    ciphey::vigenere::encrypt(tmp_ctext, actual_key, ciphey::test::group());
+    ciphey::vigenere::encrypt({tmp_ctext.data(), tmp_ctext.size()}, actual_key, ciphey::test::group());
     EXPECT_EQ(tmp_ctext, test.ctext);
   }
 }

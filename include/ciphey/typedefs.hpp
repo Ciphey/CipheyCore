@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <ciphey/span.hpp>
 
 namespace ciphey {
   using char_t = char;
@@ -13,7 +14,12 @@ namespace ciphey {
   using freq_t = size_t;
 
   using string_t = std::basic_string<char_t>;
-  using data = std::vector<uint8_t>;
+  using string_ref_t = nonstd::span<char_t>;
+  using string_const_ref_t = std::basic_string_view<char_t>;
+
+  using bytes_t = std::vector<uint8_t>;
+  using bytes_ref_t = nonstd::span<uint8_t>;
+  using bytes_const_ref_t = nonstd::span<const uint8_t>;
 
   using domain_t = std::set<char_t>;
   using freq_table = std::map<char_t, freq_t>;

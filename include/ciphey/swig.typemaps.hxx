@@ -8,18 +8,33 @@
 #include <stdexcept>
 
 namespace ciphey::swig {
-  template<typename Arg>
-  inline void bytes_out(Arg& target, data const& b) noexcept {
+  template<typename ByteContainerWithOptRef, typename Arg>
+  inline void bytes_out(Arg& target, ByteContainerWithOptRef b) noexcept {
     target = PyBytes_FromStringAndSize(reinterpret_cast<char const*>(b.data()), b.size());
   }
 
-  template<typename Arg>
-  inline void bytes_in(data& target, Arg const& b) {
+  template<typename ByteContainer, typename Arg>
+  inline void bytes_in(ByteContainer& target, Arg const& b) {
+    Py_ssize_t len;
+    uint8_t* ptr;
+    // Does not pass ownership
+    if (PyBytes_AsStringAndSize(b, reinterpret_cast<char**>(&ptr), &len) < 0)
+      throw std::invalid_argument("Bad PyBytes");
+    target = ByteContainer{ptr, ptr + len};
+  }
+
+  template<typename StrContainerWithOptRef, typename Arg>
+  inline void str_out(Arg& target, StrContainerWithOptRef b) noexcept {
+    target = PyBytes_FromStringAndSize(b.data(), b.size());
+  }
+
+  template<typename StrContainer, typename Arg>
+  inline void str_in(StrContainer& target, Arg const& b) {
     Py_ssize_t len;
     char* ptr;
     // Does not pass ownership
     if (PyBytes_AsStringAndSize(b, &ptr, &len) < 0)
       throw std::invalid_argument("Bad PyBytes");
-    target = data{ptr, ptr + len};
+    target = StrContainer{ptr, ptr + len};
   }
 }

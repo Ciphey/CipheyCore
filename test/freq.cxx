@@ -109,8 +109,16 @@ TEST(cipheyCore, entropy) {
   auto len = 0;
   for (auto i = data_ptr; *i; ++i) ++len;
 
-  ciphey::data data(data_ptr, data_ptr+len);
+  ciphey::bytes_t data(data_ptr, data_ptr+len);
 
   std::cout << ciphey::information_content(data) << std::endl;
+}
 
+TEST(cipheyCore, hammingDistance) {
+  uint8_t const* x = reinterpret_cast<uint8_t const*>(u8"this is a test");
+  uint8_t const* y = reinterpret_cast<uint8_t const*>(u8"wokka wokka!!!");
+
+  size_t len = 14;
+
+  ASSERT_EQ(ciphey::hamming_distance({x, len}, {y, len}), 37);
 }

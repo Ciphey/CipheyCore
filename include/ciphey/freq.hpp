@@ -33,16 +33,22 @@ namespace ciphey {
 
   string_t generate_fuzz(prob_table const& tab, size_t len);
 
-  // Shannon entropy calculation
-  float_t information_content(data const& b);
+  // Simple entropy calculation of octet words
+  freq_t hamming_weight(uint8_t);
+  freq_t hamming_weight(bytes_const_ref_t);
+  // Counts differing bits
+  freq_t hamming_distance(bytes_const_ref_t, bytes_const_ref_t);
+
+  // Shannon entropy calculation, by brute forcing the word size
+  float_t information_content(bytes_const_ref_t b);
 
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected);
   assoc_table closeness_assoc(prob_table const& observed, prob_table const& expected);
 
-  void freq_analysis(freq_table&, string_t const& str);
-  size_t freq_analysis(freq_table&, string_t const& str, domain_t const& domain);
-  void freq_analysis(windowed_freq_table& tabs, string_t const& str, size_t offset = 0);
-  size_t freq_analysis(windowed_freq_table&, string_t const& str, domain_t const& domain, size_t offset = 0);
+  void freq_analysis(freq_table&, string_const_ref_t const& str);
+  size_t freq_analysis(freq_table&, string_const_ref_t const& str, domain_t const& domain);
+  void freq_analysis(windowed_freq_table& tabs, string_const_ref_t const& str, size_t offset = 0);
+  size_t freq_analysis(windowed_freq_table&, string_const_ref_t const& str, domain_t const& domain, size_t offset = 0);
 
   prob_table freq_conv(freq_table const& freqs, freq_t total_len);
   prob_table freq_conv(freq_table const& freqs);

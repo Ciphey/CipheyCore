@@ -12,7 +12,7 @@ namespace ciphey::vigenere {
     return detail::reducer<key_t, caesar::key_t, caesar::crack, group_t const&>::crack(observed, expected, count, p_value, group);
   }
 
-  void encrypt(string_t& str, key_t const& key, group_t const& group) {
+  void encrypt(string_ref_t str, key_t const& key, group_t const& group) {
     const auto inverse = invert_group(group);
 
     size_t i = 0;
@@ -25,7 +25,7 @@ namespace ciphey::vigenere {
     }
   }
 
-  void decrypt(string_t& str, key_t const& key, group_t const& group) {
+  void decrypt(string_ref_t str, key_t const& key, group_t const& group) {
     std::vector<size_t> inv_key(key.size());
     for (size_t i = 0; i < key.size(); ++i)
       inv_key[i] = group.size() - key[i];
@@ -48,7 +48,7 @@ namespace ciphey::vigenere {
 //    return 1-chisq_cdf(count - observed.size(), stat);
   }
 
-  key_len_res likely_key_lens(std::string input, prob_table const& expected,
+  key_len_res likely_key_lens(string_const_ref_t input, prob_table const& expected,
                               domain_t const& domain, prob_t p_value) {
     key_len_res ret;
     ret.candidates.reserve(8);

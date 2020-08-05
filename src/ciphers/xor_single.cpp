@@ -22,7 +22,7 @@ namespace ciphey::xor_single {
     }
   }
 
-  void crypt(data& str, key_t const& key) {
+  void crypt(bytes_ref_t& str, key_t const& key) {
     for (auto& i : str)
       i ^= key;
   }

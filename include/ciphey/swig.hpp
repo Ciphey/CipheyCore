@@ -50,7 +50,7 @@ namespace ciphey {
     domain_t domain;
     freq_t len;
   };
-  inline std::shared_ptr<windowed_analysis_res> analyse_string(string_t str, size_t window_size,
+  inline std::shared_ptr<windowed_analysis_res> analyse_string(string_const_ref_t str, size_t window_size,
                                                                domain_t domain = {}) {
     auto ret = std::make_shared<windowed_analysis_res>();
     ret->domain = std::move(domain);
@@ -97,7 +97,7 @@ namespace ciphey {
     return gof_test(create_assoc_table(freq_conv(in->freqs, in->len), expected), in->len);
   }
 
-  inline float_t info_content(data in) {
+  inline float_t info_content(bytes_t in) {
     return information_content(in);
   }
 
@@ -110,13 +110,11 @@ namespace ciphey {
     return caesar::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
   }
 
-  inline string_t caesar_decrypt(string_t str, ciphey::caesar::key_t key, group_t group) {
+  inline void caesar_decrypt(string_ref_t str, ciphey::caesar::key_t key, group_t group) {
     caesar::decrypt(str, key, group);
-    return str;
   }
-  inline string_t caesar_encrypt(string_t str, ciphey::caesar::key_t key, group_t group) {
+  inline void caesar_encrypt(string_ref_t str, ciphey::caesar::key_t key, group_t group) {
     caesar::encrypt(str, key, group);
-    return str;
   }
   inline prob_t caesar_detect(std::shared_ptr<simple_analysis_res> in, prob_table expected) {
     return caesar::detect(freq_conv(in->freqs, in->len), expected, in->len);
@@ -128,13 +126,11 @@ namespace ciphey {
                                                                                    prob_t p_value = default_p_value) {
     return vigenere::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
   }
-  inline string_t vigenere_decrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
+  inline void vigenere_decrypt(string_ref_t str, ciphey::vigenere::key_t key, group_t group) {
     vigenere::decrypt(str, key, group);
-    return str;
   }
-  inline string_t vigenere_encrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {
+  inline void vigenere_encrypt(string_ref_t str, ciphey::vigenere::key_t key, group_t group) {
     vigenere::encrypt(str, key, group);
-    return str;
   }
   inline prob_t vigenere_detect(std::shared_ptr<windowed_analysis_res> in, prob_table expected) {
     auto prob_tab = freq_conv(in->freqs, in->len);
@@ -163,6 +159,10 @@ namespace ciphey {
     return ret;
   }
 
+  inline size_t xorcrypt_guess_len(bytes_const_ref_t in) {
+    return xorcrypt::guess_len(in);
+  }
+
 
   // +-------------------------------------------------------------------------+
   // |                                AUSEARCH                                 |
@@ -180,8 +180,7 @@ namespace ciphey {
     return ret;
   }
 
-  inline data xor_single_crypt(data str, ciphey::xor_single::key_t key) {
+  inline void xor_single_crypt(bytes_ref_t str, ciphey::xor_single::key_t key) {
     xor_single::crypt(str, key);
-    return str;
   }
 }

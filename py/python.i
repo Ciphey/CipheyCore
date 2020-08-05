@@ -14,8 +14,29 @@
 %include "ciphey/swig.typemaps.hxx"
 
 namespace ciphey {
-  %typemap(in) data { ::ciphey::swig::bytes_in($1, $input); }
-  %typemap(out) data { ::ciphey::swig::bytes_out($result, $1); }
+  %typemap(in)  bytes_t           { ::ciphey::swig::bytes_in<::ciphey::bytes_t>($1, $input); }
+  %typemap(out) bytes_t           { ::ciphey::swig::bytes_out<::ciphey::bytes_t const&>($result, $1); }
+  %typemap(in)  bytes_ref_t       { ::ciphey::swig::bytes_in<::ciphey::bytes_ref_t>($1, $input); }
+  %typemap(out) bytes_ref_t       { ::ciphey::swig::bytes_out<::ciphey::bytes_ref_t>($result, $1); }
+  %typemap(in)  bytes_const_ref_t { ::ciphey::swig::bytes_in<::ciphey::bytes_const_ref_t>($1, $input); }
+  %typemap(out) bytes_const_ref_t { ::ciphey::swig::bytes_out<::ciphey::bytes_const_ref_t>($result, $1); }
+
+  %typemap(typecheck,precedence=SWIG_TYPECHECK_INT8_ARRAY) bytes_t { $1 = PyBytes_Check($input); }
+  %typemap(typecheck,precedence=SWIG_TYPECHECK_INT8_ARRAY) bytes_ref_t { $1 = PyBytes_Check($input); }
+  %typemap(typecheck,precedence=SWIG_TYPECHECK_INT8_ARRAY) bytes_const_ref_t { $1 = PyBytes_Check($input); }
+
+  %typemap(in)  string_t           { ::ciphey::swig::str_in<::ciphey::string_t>($1, $input); }
+  %typemap(out) string_t           { ::ciphey::swig::str_out<::ciphey::string_t const&>($result, $1); }
+  %typemap(in)  string_ref_t       { ::ciphey::swig::str_in<::ciphey::string_ref_t>($1, $input); }
+  %typemap(out) string_ref_t       { ::ciphey::swig::str_out<::ciphey::string_ref_t>($result, $1); }
+  %typemap(in)  string_const_ref_t { ::ciphey::swig::str_in<::ciphey::string_const_ref_t>($1, $input); }
+  %typemap(out) string_const_ref_t { ::ciphey::swig::str_out<::ciphey::string_const_ref_t>($result, $1); }
+
+
+
+  %typemap(typecheck,precedence=SWIG_TYPECHECK_STRING) string_t { $1 = PyString_Check($input); }
+  %typemap(typecheck,precedence=SWIG_TYPECHECK_STRING) string_ref_t { $1 = PyString_Check($input); }
+  %typemap(typecheck,precedence=SWIG_TYPECHECK_STRING) string_const_ref_t { $1 = PyString_Check($input); }
 }
 
 %{
