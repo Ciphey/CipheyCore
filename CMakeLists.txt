@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(CipheyCore VERSION 0.2.9)
+project(CipheyCore VERSION 0.3.0.1)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
