@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(CipheyCore VERSION 0.3.0.3)
+project(CipheyCore VERSION 0.3.0.4)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -30,7 +30,7 @@ option(CIPHEY_CORE_PYTHON "Force including (and linking if necessary) from the p
 if (CIPHEY_CORE_PYTHON)
   if (APPLE)
     file(GLOB python_include "${CIPHEY_CORE_PYTHON}/include/python*")
-    file(GLOB python_lib "${CIPHEY_CORE_PYTHON}/lib/config*/libpython*.a")
+    file(GLOB python_lib "${CIPHEY_CORE_PYTHON}/lib/python*/config*/libpython*.a")
     include_directories(${python_include})
     set(ciphey_py_extra ${python_lib})
   elseif (EXISTS "${CIPHEY_CORE_PYTHON}/include/")
