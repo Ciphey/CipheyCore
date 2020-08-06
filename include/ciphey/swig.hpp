@@ -187,11 +187,13 @@ namespace ciphey {
     return xor_single::crack(freq_conv(in->freqs, in->len), expected, in->len, p_value);
   }
 
-  inline bytes_t xor_single_decrypt(bytes_t str, ciphey::caesar::key_t key) {
+  inline bytes_t xor_single_decrypt(bytes_t str, ciphey::xor_single::key_t key) {
+    ::printf("%x\n", str[2]);
     xor_single::decrypt(str, key);
+    ::printf("%x\n", str[2]);
     return str;
   }
-  inline bytes_t xor_single_encrypt(bytes_t str, ciphey::caesar::key_t key) {
+  inline bytes_t xor_single_encrypt(bytes_t str, ciphey::xor_single::key_t key) {
     xor_single::encrypt(str, key);
     return str;
   }
@@ -199,7 +201,7 @@ namespace ciphey {
     return xor_single::detect(freq_conv(in->freqs, in->len), expected, in->len);
   }
 
-  inline std::vector<ciphey::crack_result<ciphey::xorcrypt::key_t>> xorcrypt_crack(std::shared_ptr<windowed_analysis_res> in,
+  inline std::vector<ciphey::crack_result<ciphey::bytes_t>> xorcrypt_crack(std::shared_ptr<windowed_analysis_res> in,
                                                                                    prob_table expected,
                                                                                    prob_t p_value = default_p_value) {
     return xorcrypt::crack(freq_conv(in->freqs, in->len), expected, in->len, p_value);
@@ -208,7 +210,15 @@ namespace ciphey {
     xorcrypt::decrypt(str, key);
     return str;
   }
+  inline bytes_t xorcrypt_decrypt(bytes_t str, ciphey::xorcrypt::key_t const& key) {
+    xorcrypt::decrypt(str, key);
+    return str;
+  }
   inline bytes_t xorcrypt_encrypt(bytes_t str, bytes_const_ref_t key) {
+    xorcrypt::encrypt(str, key);
+    return str;
+  }
+  inline bytes_t xorcrypt_encrypt(bytes_t str, ciphey::xorcrypt::key_t const& key) {
     xorcrypt::encrypt(str, key);
     return str;
   }

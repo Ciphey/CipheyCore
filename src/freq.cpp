@@ -58,8 +58,11 @@ namespace ciphey {
     // We can use index notation for this, as that gets default constructed
     for (auto& i : expected)
       keys[i.first].exp_val = i.second;
-    for (auto& i : observed)
+    for (auto& i : observed) {
+      if (i.second == 0.)
+        continue;
       keys[i.first].obs_val = i.second;
+    }
 
     // We can now fill in all the values, with non-existent expected values being defined as zero
     assoc_table ret;

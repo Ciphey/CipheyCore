@@ -35,14 +35,11 @@ namespace ciphey::xor_single {
       // Undo last one, and add our one (the -1'th term is 0, so no effect!)
       //
       // TODO: actually do this with a rotation
-//      xor_prob_table(observed, key ^ (key - 1));
-      prob_table new_observed;
-      for (auto& i : observed)
-        new_observed[i.first^key] = i.second;
+      xor_prob_table(observed, key ^ (key - 1));
       if (key == 'c')
         ::printf("");
 
-      if (auto key_p_value = gof_test(create_assoc_table(new_observed, expected), count); key_p_value > p_value)
+      if (auto key_p_value = gof_test(create_assoc_table(observed, expected), count); key_p_value > p_value)
         ret.push_back({.key = key, .p_value = key_p_value });
       else {
         ::printf("");

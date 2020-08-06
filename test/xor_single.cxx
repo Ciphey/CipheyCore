@@ -36,7 +36,6 @@ static std::vector<uint8_t> ptext {
 static uint8_t key = 'c';
 
 TEST(cipheyCore, xorSingle) {
-  return;
   auto analysis = ciphey::analyse_bytes(ctext);
 
   auto res_collection = ciphey::xor_single_crack(analysis, ciphey::test::expected());
@@ -53,8 +52,10 @@ TEST(cipheyCore, xorSingle) {
   EXPECT_TRUE(false) << "Key was not found";
   found:
 
-  auto ptext_res = ctext;
-  ciphey::xor_single_decrypt(ptext_res, key);
-
+  auto ptext_res = ciphey::xor_single_decrypt(ctext, key);
   EXPECT_TRUE(std::equal(ptext_res.begin(), ptext_res.end(), ptext.begin()));
+  ptext_res = ciphey::xor_single_decrypt(ptext_res, key);
+  EXPECT_TRUE(std::equal(ptext_res.begin(), ptext_res.end(), ctext.begin()));
+
+  std::cout << reinterpret_cast<char*>(ptext.data()) << std::endl;
 }

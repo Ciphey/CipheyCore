@@ -7,6 +7,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include <iostream>
+
 namespace ciphey::swig {
   template<typename ByteContainerWithOptRef, typename Arg>
   inline void bytes_out(Arg& target, ByteContainerWithOptRef b) noexcept {
@@ -20,6 +22,7 @@ namespace ciphey::swig {
     // Does not pass ownership
     if (PyBytes_AsStringAndSize(b, reinterpret_cast<char**>(&ptr), &len) < 0)
       throw std::invalid_argument("Bad PyBytes");
+
     target = ByteContainer{ptr, ptr + len};
   }
 
@@ -30,6 +33,8 @@ namespace ciphey::swig {
 
   template<typename StrContainer, typename Arg>
   inline void str_in(StrContainer& target, Arg const& b) {
+    new(&target) StrContainer;
+
     Py_ssize_t len;
     const char* ptr;
     // Does not pass ownership
