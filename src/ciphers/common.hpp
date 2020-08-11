@@ -44,6 +44,8 @@ namespace ciphey::detail {
 
     static inline std::vector<crack_result<Key>> crack(windowed_prob_table observed, prob_table const& expected,
                                                        freq_t count, prob_t p_value, CrackArgs const&&... args) {
+      if (count > 2000 && observed.size() == 29)
+        printf("");
       std::vector<crack_result<Key>> ret;
       intermediate_res_t imdt(observed.size());
       // Solve as distinct substitution cyphers, in parallel
@@ -51,6 +53,8 @@ namespace ciphey::detail {
       for (size_t i = 0; i < observed.size(); ++i) {
         n_candidates *= (imdt[i] = CrackOne(observed[i]/*std::move(observed[i])*/, expected,
                            std::forward<CrackArgs>(args)..., count / observed.size(), p_value)).size();
+        if (n_candidates == 0)
+          return {};
       }
       // This is the maximum reasonable amount before we tell someone to piss off
       //
