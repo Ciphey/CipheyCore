@@ -1,5 +1,7 @@
 #include <ciphey/ciphers.hpp>
 
+#include <iostream>
+
 #include <array>
 
 namespace ciphey::xor_single {

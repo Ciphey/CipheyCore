@@ -33,12 +33,15 @@ namespace ciphey {
   }
 
   namespace vigenere {
+    // For some reason, vigenere cracker is more open
+    constexpr prob_t crack_p_value = 0.5;
+
     void encrypt(string_ref_t str, key_t const& key, group_t const& group);
     void decrypt(string_ref_t str, key_t const& key, group_t const& group);
 
     std::vector<crack_result<key_t>> crack(windowed_prob_table observed, prob_table const& expected,
                                            group_t const& group, freq_t ptext_length,
-                                           prob_t p_value = default_p_value);
+                                           prob_t p_value = crack_p_value);
     prob_t detect(windowed_prob_table const& observed, prob_table const& expected, freq_t count);
     key_len_res likely_key_lens(string_const_ref_t input, prob_table const& expected, domain_t const& domain,
                                 prob_t p_value = default_p_value);

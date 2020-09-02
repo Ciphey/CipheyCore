@@ -143,7 +143,7 @@ namespace ciphey {
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(std::shared_ptr<windowed_analysis_res> in,
                                                                                    prob_table expected,
                                                                                    group_t group,
-                                                                                   prob_t p_value = default_p_value) {
+                                                                                   prob_t p_value = vigenere::crack_p_value) {
     return vigenere::crack(freq_conv(in->freqs, in->len), expected, group, in->len, p_value);
   }
   inline string_t vigenere_decrypt(string_t str, ciphey::vigenere::key_t key, group_t group) {

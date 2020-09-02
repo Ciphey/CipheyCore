@@ -9,14 +9,63 @@
 #include <thread>
 
 namespace ciphey {
-  float_t run_chisq(assoc_table const& assoc, freq_t count) {
-    prob_t chisq = 0;
+  static void merge_last(assoc_table& assoc) {
+    // Take the last two elements
+    auto to_merge = std::move(assoc.back());
+    assoc.pop_back();
+    auto target = assoc.back();
+    assoc.pop_back();
+
+    // Combine them
+    target.expected += to_merge.expected;
+    target.observed += to_merge.observed;
+
+    // Insert them into the correct position
+    auto new_pos = std::partition_point(assoc.begin(), assoc.end(),
+                                        [&](auto& a) { return a.expected > target.expected; });
+    assoc.insert(new_pos, std::move(target));
+
+  }
+
+  void prepare_chisq(assoc_table& assoc, freq_t count) {
+    // IIRC copying is much, MUCH faster than mallocing, so a list would be slower in this case
+    //
+    // Benchmarks seem to confirm this
+
+    // If there's nothing we can do, give up
+    if (count < 10)
+      return;
+
+    std::sort(assoc.begin(), assoc.end(), [](auto& a, auto& b) { return a.expected > b.expected; });
+
+    // We now perform a *really* simple bin packing to make sure that no expected frequency is lower that 1
+    auto exp_1_target = 1. / count;
+
+    while (assoc.size() >= 2 && assoc.back().expected < exp_1_target)
+      merge_last(assoc);
+
+
+    auto exp_5_target = 5. / count;
+    if (exp_5_target > 0.2)
+      return;
+    while (assoc.size() >= 2) {
+      auto upper_bound = std::partition_point(assoc.begin(), assoc.end(),
+                                              [&](auto& a) { return a.expected > exp_5_target; });
+      auto n_less_than_fifth = assoc.end() - upper_bound;
+      if (n_less_than_fifth <= assoc.size() / 5.)
+        break;
+      merge_last(assoc);
+    }
+  }
+
+  float_t run_chisq(const assoc_table& assoc, freq_t count) {
+    float_t chisq = 0;
 
     for (auto const& elem : assoc) {
-      if (elem.expected == 0)
+      if (elem.expected == 0 && elem.observed != 0)
         return std::numeric_limits<float_t>::infinity();
 
-      prob_t contrib = elem.expected - elem.observed;
+      float_t contrib = elem.expected - elem.observed;
       contrib *= contrib;
       contrib /= elem.expected;
 
@@ -30,20 +79,48 @@ namespace ciphey {
     return chisq;
   }
 
+  float_t run_g(const assoc_table& assoc, freq_t count) {
+    float_t g = 0;
+
+    for (auto const& elem : assoc) {
+      if (elem.observed == 0)
+        continue;
+
+      if (elem.expected == 0)
+        return std::numeric_limits<float_t>::infinity();
+
+      float_t contrib = ::log(elem.observed / elem.expected); // `count` cancels out here
+      contrib *= elem.observed;
+
+      g += contrib;
+    }
+
+    // (f_e/n - f_o/n)^2/(f_e/n) = (1/n) (f_e - f_o)/(f_e)
+    //
+    // We need to normalise this for our stat to be interpretable
+    g *= 2 * count;
+    return g;
+  }
+
   prob_t chisq_cdf(freq_t dof, float_t up_to) {
     // Handle the asymptopic value first, to save time
     if (up_to == std::numeric_limits<float_t>::infinity())
       return 1;
-    if (up_to == 0)
+    else if (up_to == 0)
+      return 0;
+    else if (dof == 0) // https://en.wikipedia.org/wiki/Zero_degrees_of_freedom
       return 0;
     return boost::math::gamma_p(static_cast<float>(dof) / 2, up_to / 2);
   }
 
-  prob_t gof_test(assoc_table const& assoc, freq_t count) {
-    auto stat = run_chisq(assoc, count);
+  prob_t gof_test(assoc_table assoc, freq_t count) {
+//    prepare_chisq(assoc, count);
+    auto stat = run_g(assoc, count);
     // We want the upper tail
     auto p_value = 1 - chisq_cdf(assoc.size() - 1, stat);
+
     return p_value;
+//    return std::max(p_value, orig_p_value);
   }
 
   assoc_table create_assoc_table(prob_table const& observed, prob_table const& expected) {
@@ -66,7 +143,7 @@ namespace ciphey {
 
     // We can now fill in all the values, with non-existent expected values being defined as zero
     assoc_table ret;
-    ret.reserve(keys.size());
+//    ret.reserve(keys.size());
 
     for (auto& i : keys)
       ret.emplace_back(assoc_table_elem{
@@ -211,38 +288,34 @@ namespace ciphey {
       return {{.observed = 0, .expected = 1}};
 
     assoc_table assoc;
-    assoc.reserve(expected.size());
-    for (auto& i : expected)
-      assoc.emplace_back(assoc_table_elem{.expected = i.second});
-    std::sort(assoc.rbegin(), assoc.rend(),
-              [](assoc_table_elem& a, assoc_table_elem& b) { return a.expected < b.expected; });
 
+    // Sort the expected values
+    std::vector<prob_t> expected_sorted;
+    expected_sorted.reserve(expected_sorted.size());
+    for (auto& i : expected)
+      expected_sorted.emplace_back(i.second);
+    std::sort(expected_sorted.rbegin(), expected_sorted.rend());
+
+    // Sort the observed values
     std::vector<prob_t> observed_sorted;
     observed_sorted.reserve(observed.size());
     for (auto& i : observed)
       observed_sorted.emplace_back(i.second);
     std::sort(observed_sorted.rbegin(), observed_sorted.rend());
-    // Trim unobserved values
-    while (observed_sorted.back() == 0) {
-      observed_sorted.pop_back();
-      if (observed.size() == 0)
-        return {{.observed = 0, .expected = 1}};
-    };
 
     // Fill table with observed values, or zeroes where appropriate
     size_t i;
     if (observed.size() > expected.size()) {
-      assoc.resize(observed.size());
       for (i = 0; i < expected.size(); ++i)
-        assoc[i].observed = observed_sorted[i];
+        assoc.emplace_back(assoc_table_elem{.observed = observed_sorted[i], .expected = expected_sorted[i]});
       for (; i < observed.size(); ++i)
-        assoc[i] = assoc_table_elem{.observed = observed_sorted[i], .expected = 0};
+        assoc.emplace_back(assoc_table_elem{.observed = observed_sorted[i], .expected = 0.});
     }
     else {
       for (i = 0; i < observed.size(); ++i)
-        assoc[i].observed = observed_sorted[i];
+        assoc.emplace_back(assoc_table_elem{.observed = observed_sorted[i], .expected = expected_sorted[i]});
       for (; i < expected.size(); ++i)
-        assoc[i].observed = 0;
+        assoc.emplace_back(assoc_table_elem{.observed = 0, .expected = expected_sorted[i]});
     }
 
     return assoc;
@@ -254,6 +327,7 @@ namespace ciphey {
       return 0;
 
     auto assoc = closeness_assoc(observed, expected);
+    prepare_chisq(assoc, count);
     auto stat = run_chisq(assoc, count);
 
     return 1 - chisq_cdf(assoc.size() - 1, stat);
@@ -270,6 +344,7 @@ namespace ciphey {
     for (size_t i = 0; i < observed.size(); ++i) {
       asyncs[i] = std::async(std::launch::async, [&, i]() -> imdt_res_t {
         auto assoc = closeness_assoc(observed[i], expected);
+        prepare_chisq(assoc, count);
 
         // We can normalise at the end for efficiency
         return {.tab_size = assoc.size(), .chi_sq = run_chisq(assoc)};

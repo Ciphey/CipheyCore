@@ -6,6 +6,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <list>
 
 #include <cmath>
 #include <cstdint>
@@ -14,6 +15,8 @@ namespace ciphey {
   struct assoc_table_elem { prob_t observed; prob_t expected; };
   using assoc_table = std::vector<assoc_table_elem>;
 
+  /// Does various things to correct the table for a chi-squared analysis
+  void prepare_chisq(assoc_table& assoc, freq_t count = 1);
   /// A simple chi squared contribution calculator
   ///
   /// @param count If set to 1 (which is default), no normalisation will occur.
@@ -23,7 +26,7 @@ namespace ciphey {
   /// Goodness-of-fit test
   ///
   /// @returns the probability that, given the real distribution is the expected one, something at least this uncorrelated arises
-  prob_t gof_test(assoc_table const& assoc, freq_t count);
+  prob_t gof_test(assoc_table assoc, freq_t count);
   /// Closeness test
   ///
   /// Used to see how well two distributions match, if we pair up the most liekly values,

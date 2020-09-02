@@ -1,12 +1,11 @@
 // Swig complains if this is set
-//#pragma once
+#pragma once
 
 #include <map>
 #include <vector>
 #include <string>
 #include <set>
 #include <ciphey/span.hpp>
-
 namespace ciphey {
   using char_t = char;
   using float_t = double;

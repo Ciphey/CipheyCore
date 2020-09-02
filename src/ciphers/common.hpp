@@ -19,7 +19,7 @@ namespace ciphey::detail {
 
       // At the bottom layer of recursion, we fill in all the values
       if (pos == prev_pos.size()) {
-         crack_result<Key> base_candidate{.key = Key(imdt.size()), .p_value = 1};
+        crack_result<Key> base_candidate{.key = Key(imdt.size()), .p_value = 1};
         for (size_t i = 0; i < pos; ++i) {
           auto& part = *prev_pos[i];
           base_candidate.key[i] = part.key;
@@ -27,8 +27,9 @@ namespace ciphey::detail {
         }
         for (auto& final_key_part : target) {
           auto candidate_p_value = base_candidate.p_value * final_key_part.p_value;
-          if (candidate_p_value < p_value)
-            continue;
+          // This was removed as it blocked valid ciphertexts
+//          if (candidate_p_value < p_value)
+//            continue;
           auto& back = v.emplace_back(crack_result<Key>{ .key = base_candidate.key });
           back.key.back() = final_key_part.key;
           back.p_value = candidate_p_value;
@@ -48,12 +49,16 @@ namespace ciphey::detail {
       intermediate_res_t imdt(observed.size());
       // Solve as distinct substitution cyphers, in parallel
       double n_candidates = 1;
+      if (observed.size() == 29)
+        printf("");
       for (size_t i = 0; i < observed.size(); ++i) {
         n_candidates *= (imdt[i] = CrackOne(observed[i]/*std::move(observed[i])*/, expected,
                            std::forward<CrackArgs>(args)..., count / observed.size(), p_value)).size();
+        printf("");
         if (n_candidates == 0)
           return {};
       }
+
       // This is the maximum reasonable amount before we tell someone to piss off
       //
       // This catches BS like passing in plaintext
