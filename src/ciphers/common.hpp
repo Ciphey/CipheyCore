@@ -44,8 +44,6 @@ namespace ciphey::detail {
 
     static inline std::vector<crack_result<Key>> crack(windowed_prob_table observed, prob_table const& expected,
                                                        freq_t count, prob_t p_value, CrackArgs const&&... args) {
-      if (count > 2000 && observed.size() == 29)
-        printf("");
       std::vector<crack_result<Key>> ret;
       intermediate_res_t imdt(observed.size());
       // Solve as distinct substitution cyphers, in parallel
