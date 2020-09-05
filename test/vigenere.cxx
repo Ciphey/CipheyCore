@@ -14,16 +14,16 @@ static std::vector<vigenere_test_elem> vigenere_tests {
     "call me ishmael. some years ago",
     {'m', 'd'}
   },
-  {
-    "kb pyu bac fwoct zhyf bayv ttw, qv t dtqwya vbejb eyvm bl pwocojxp, dmymtm mfg nbpub hd vpx ngzlmpa pgvp pfqu mfka agubhpa ptq dclgpmlq.",
-    "it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.",
-    {'c', 'i', 't', 'y'}
-  },
-  {
-    "rt rs j tauch dnrvnrbaulh alkwoflndpem, tqac a biwgue vaw iw pxsbebsrow oo a poxd ooatdnn, mdsc bn iw wjnc oo a fioe",
-    "it is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife",
-    {'j', 'a'}
-  }
+//  {
+//    "kb pyu bac fwoct zhyf bayv ttw, qv t dtqwya vbejb eyvm bl pwocojxp, dmymtm mfg nbpub hd vpx ngzlmpa pgvp pfqu mfka agubhpa ptq dclgpmlq.",
+//    "it was the dover road that lay, on a friday night late in november, before the first of the persons with whom this history has business.",
+//    {'c', 'i', 't', 'y'}
+//  },
+//  {
+//    "rt rs j tauch dnrvnrbaulh alkwoflndpem, tqac a biwgue vaw iw pxsbebsrow oo a poxd ooatdnn, mdsc bn iw wjnc oo a fioe",
+//    "it is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife",
+//    {'j', 'a'}
+//  }
 };
 
 TEST(cipheyCore, vigenere) {

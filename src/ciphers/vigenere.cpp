@@ -42,10 +42,8 @@ namespace ciphey::vigenere {
       // FIXME: work out the amount from the count, rather than just flooring it
       acc *= caesar::detect(i, expected, count / observed.size());
     }
-    return acc;
 
-//    auto stat = closeness_chisq(observed, expected, count);
-//    return 1-chisq_cdf(count - observed.size(), stat);
+    return acc;
   }
 
   key_len_res likely_key_lens(string_const_ref_t input, prob_table const& expected,
@@ -55,7 +53,6 @@ namespace ciphey::vigenere {
 
     // Dividing by 4 is a good guess of what is feasible to crack
     for (size_t key_len = 2; key_len < input.size() / 8; ++key_len) {
-
       ret.candidates.emplace_back();
       auto& last = ret.candidates.back();
       last.tab = windowed_freq_table(key_len);

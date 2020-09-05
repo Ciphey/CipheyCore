@@ -45,6 +45,13 @@ namespace ciphey::detail {
 
     static inline std::vector<crack_result<Key>> crack(windowed_prob_table observed, prob_table const& expected,
                                                        freq_t count, prob_t p_value, CrackArgs const&&... args) {
+      // This handles the case where we get a lot of similar results
+      constexpr double clamp = 2520;
+      // This is the maximum reasonable amount before we tell someone to piss off
+      //
+      // This catches BS like passing non-vigenere input
+      constexpr double hard_clamp = 1e7;
+
       std::vector<crack_result<Key>> ret;
       intermediate_res_t imdt(observed.size());
       // Solve as distinct substitution cyphers
@@ -56,12 +63,14 @@ namespace ciphey::detail {
           return {};
       }
 
-      // This is the maximum reasonable amount before we tell someone to piss off
-      //
-      // This catches BS like passing in plaintext
-      if (n_candidates > 1e4)
-        return {};
 
+      if (n_candidates > hard_clamp)
+        return {};
+      else if (n_candidates > clamp) {
+        size_t max_candidates = ::pow(clamp, 1./observed.size());
+        for (auto& i : imdt)
+          i.resize(std::min(i.size(), max_candidates));
+      }
       // Now we reduce the lists, and kick out any which fail our p value
       std::vector<crack_result<BaseKey> const*> indexes(observed.size() - 1);
       reduce(ret, imdt, p_value, indexes);
