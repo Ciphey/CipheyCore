@@ -188,9 +188,7 @@ namespace ciphey {
   }
 
   inline bytes_t xor_single_decrypt(bytes_t str, ciphey::xor_single::key_t key) {
-    ::printf("%x\n", str[2]);
     xor_single::decrypt(str, key);
-    ::printf("%x\n", str[2]);
     return str;
   }
   inline bytes_t xor_single_encrypt(bytes_t str, ciphey::xor_single::key_t key) {
