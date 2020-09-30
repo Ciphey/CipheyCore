@@ -1,5 +1,8 @@
 ![PyPI](https://img.shields.io/pypi/v/cipheycore)
 ![Tests](https://github.com/Ciphey/CipheyCore/workflows/Tests/badge.svg)
+[![Downloads](https://pepy.tech/badge/cipheycore)](https://pepy.tech/project/cipheycore)
+[![Downloads](https://pepy.tech/badge/cipheycore/month)](https://pepy.tech/project/cipheycore/month)
+[![Downloads](https://pepy.tech/badge/cipheycore/week)](https://pepy.tech/project/cipheycore/week)
 # CipheyCore
 Some cryptanalysis tidbits written in a *proper* language
 
