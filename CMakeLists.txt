@@ -8,7 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(Boost REQUIRED COMPONENTS)
 include(ExternalProject)
 ExternalProject_Add(msieve
-  BUILD_COMMAND make all
+  BUILD_COMMAND make all -j8
   INSTALL_COMMAND ""
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -17,10 +17,12 @@ ExternalProject_Add(msieve
 )
 add_library(MSieve::msieve STATIC IMPORTED)
 set_target_properties(MSieve::msieve PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/msieve/${CMAKE_STATIC_LIBRARY_PREFIX}msieve${CMAKE_STATIC_LIBRARY_SUFFIX}")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/msieve/include") # Early create dir to stop warning
 set_target_properties(MSieve::msieve PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/msieve/include")
 find_package(ZLIB REQUIRED)
 find_package(GMP REQUIRED)
 target_link_libraries(MSieve::msieve INTERFACE GMP::gmp ${CMAKE_DL_LIBS})
+add_dependencies(MSieve::msieve msieve)
 
 file(GLOB_RECURSE ciphey_core_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(ciphey_core ${ciphey_core_SOURCES})
