@@ -2,7 +2,7 @@ name: Linux Release Build
 on:
   push: 
     tags:
-    - v*
+    - *
 jobs:
   build-linux64:
     name: Build Linux64 package
