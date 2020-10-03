@@ -3,8 +3,24 @@ cmake_minimum_required(VERSION 3.10)
 project(CipheyCore VERSION 0.3.1)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 find_package(Boost REQUIRED COMPONENTS)
+include(ExternalProject)
+ExternalProject_Add(msieve
+  BUILD_COMMAND make all
+  INSTALL_COMMAND ""
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  GIT_REPOSITORY https://github.com/Cyclic3/msieve/
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/msieve"
+)
+add_library(MSieve::msieve STATIC IMPORTED)
+set_target_properties(MSieve::msieve PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/msieve/${CMAKE_STATIC_LIBRARY_PREFIX}msieve${CMAKE_STATIC_LIBRARY_SUFFIX}")
+set_target_properties(MSieve::msieve PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/msieve/include")
+find_package(ZLIB REQUIRED)
+find_package(GMP REQUIRED)
+target_link_libraries(MSieve::msieve INTERFACE GMP::gmp ${CMAKE_DL_LIBS})
 
 file(GLOB_RECURSE ciphey_core_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_library(ciphey_core ${ciphey_core_SOURCES})
@@ -12,7 +28,6 @@ target_include_directories(ciphey_core PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-include_directories(subboost)
 
 if (MSVC)
   target_compile_options(ciphey_core PUBLIC "/std:c++latest")
@@ -20,7 +35,7 @@ else()
   target_compile_features(ciphey_core PUBLIC cxx_std_20)
 endif()
 
-target_link_libraries(ciphey_core PUBLIC Boost::boost)
+target_link_libraries(ciphey_core PUBLIC Boost::boost MSieve::msieve)
 
 add_library(Ciphey::core ALIAS ciphey_core)
 

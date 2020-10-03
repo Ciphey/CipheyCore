@@ -102,21 +102,24 @@ namespace ciphey::ausearch {
       }
       weight = calculate_antiweight(edges);
 
-      while (true) {
-        float_t tmp_weight = weight;
+      // Stop ausearch going off on one
+      if (edges.size() < 20) {
+        while (true) {
+          float_t tmp_weight = weight;
 
-        for (size_t i = 0; i < edges.size() - 2; ++i)
-          brute_edges(edges, i);
-        weight = brute_edges(edges, edges.size() - 2);
-        if (weight == tmp_weight)
+          for (size_t i = 0; i < edges.size() - 2; ++i)
+            brute_edges(edges, i);
+          weight = brute_edges(edges, edges.size() - 2);
+          if (weight == tmp_weight)
+            break;
+          tmp_weight = weight;
+        }
+
+        if (weight == old_weight)
           break;
-        tmp_weight = weight;
+
+        old_weight = weight;
       }
-
-      if (weight == old_weight)
-        break;
-
-      old_weight = weight;
     }
 
     // antiweight -> weight
