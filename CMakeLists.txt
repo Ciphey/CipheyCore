@@ -5,7 +5,7 @@ project(CipheyCore VERSION 0.3.1)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-find_package(Boost REQUIRED COMPONENTS)
+find_package(Boost REQUIRED COMPONENTS system)
 include(ExternalProject)
 ExternalProject_Add(msieve
   BUILD_COMMAND make all -j8
@@ -37,7 +37,7 @@ else()
   target_compile_features(ciphey_core PUBLIC cxx_std_20)
 endif()
 
-target_link_libraries(ciphey_core PUBLIC Boost::boost MSieve::msieve)
+target_link_libraries(ciphey_core PUBLIC Boost::boost Boost::system MSieve::msieve)
 
 add_library(Ciphey::core ALIAS ciphey_core)
 
