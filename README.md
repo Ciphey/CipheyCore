@@ -1,8 +1,8 @@
 ![PyPI](https://img.shields.io/pypi/v/cipheycore)
-![Linux Release Build](https://github.com/Ciphey/CipheyCore/workflows/Linux%20Release%20Build/badge.svg)
-![Windows Release Build](https://github.com/Ciphey/CipheyCore/workflows/Windows%20Release%20Build/badge.svg)
-![MacOS Release Build](https://github.com/Ciphey/CipheyCore/workflows/MacOS%20Release%20Build/badge.svg)
 ![Tests](https://github.com/Ciphey/CipheyCore/workflows/Tests/badge.svg)
+[![Downloads](https://pepy.tech/badge/cipheycore)](https://pepy.tech/project/cipheycore)
+[![Downloads](https://pepy.tech/badge/cipheycore/month)](https://pepy.tech/project/cipheycore/month)
+[![Downloads](https://pepy.tech/badge/cipheycore/week)](https://pepy.tech/project/cipheycore/week)
 # CipheyCore
 Some cryptanalysis tidbits written in a *proper* language
 
