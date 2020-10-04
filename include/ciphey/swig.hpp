@@ -75,8 +75,7 @@ namespace ciphey {
 //    ret->probs = freq_conv(ret->freqs, ret->len);
     return ret;
   }
-  inline std::shared_ptr<windowed_analysis_res> analyse_bytes(bytes_const_ref_t str, size_t window_size,
-                                                               domain_t domain = {}) {
+  inline std::shared_ptr<windowed_analysis_res> analyse_bytes(bytes_const_ref_t str, size_t window_size) {
     auto ret = std::make_shared<windowed_analysis_res>();
     ret->freqs.resize(window_size);
     ret->len = str.size();
