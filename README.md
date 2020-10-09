@@ -19,6 +19,7 @@ CipheyCore builds as a static library, but depends on some of Boost's header-onl
 | Homebrew (OSX) | `brew install boost swig` |
 | Chocolatey (Windows) | `choco install swig` and install boost from boost.org |
 
+:warning: **Note:** This project requires `gcc>=8`. Depending on which platform you are on, you might experience that the default gcc is a lower version. You can check your gcc version by running `gcc -v`.
 ## Building
 
 CipheyCore can be used as a C++ library for use in other C++ projects, or as a python3 module (with reduced functionality and speed). 
