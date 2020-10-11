@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        abi: ["cp35-cp35m", "cp36-cp36m", "cp37-cp37m", "cp38-cp38"]
+        abi: ["cp35-cp35m", "cp36-cp36m", "cp37-cp37m", "cp38-cp38", "cp39-39"]
 
     steps:
     - uses: actions/checkout@v2
