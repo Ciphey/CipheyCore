@@ -32,6 +32,15 @@ namespace ciphey {
     prob_t detect(prob_table const& observed, prob_table const& expected, freq_t count);
   }
 
+  namespace playfair {
+    prob_t detect(prob_table const &observed, domain_t const &domain, string_ref_t str);
+
+    string_t decrypt(string_ref_t str, key_t const& ktable);
+
+    std::vector<crack_result<key_t>> crack(prob_table const &observed, prob_table const &expected,
+                                           domain_t domain, string_ref_t str, freq_t count, prob_t p_value);
+  }
+
   namespace vigenere {
     // For some reason, vigenere cracker is more open
     constexpr prob_t crack_p_value = 0.5;
