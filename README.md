@@ -8,6 +8,16 @@ Some cryptanalysis tidbits written in a *proper* language
 
 This core provides many crackers, encryption methods & decryption methods as well as cryptanalysis tidbitis to Ciphey. Written in C++ for the speed.
 
+## Installation
+
+CipheyCore can be installed via [MacPorts](https://ports.macports.org/port/py-cipheycore/summary):
+
+```
+sudo port install py-cipheycore
+```
+
+By default, this installs CipheyCore for python 3.9. To install it for Python 3.8, replace `py-cipheycore` with `py38-cipheycore`.
+
 ## Dependencies
 CipheyCore builds as a static library, but depends on some of Boost's header-only libraries.
 
@@ -16,7 +26,8 @@ CipheyCore builds as a static library, but depends on some of Boost's header-onl
 | Debian/Ubuntu/Mint | `apt-get install libboost-dev cmake build-essential swig` |
 | Arch | `pacman -S boost gcc cmake make swig` |
 | CentOS/RHEL | `yum install boost-devel cmake3 llvm-toolchain-7 make swig` |
-| Homebrew (OSX) | `brew install boost swig` |
+| Homebrew (macOS) | `brew install boost swig` |
+| MacPorts (macOS) | `sudo port install cmake boost poetry swig-python swig` |
 | Chocolatey (Windows) | `choco install swig` and install boost from boost.org |
 
 :warning: **Note:** This project requires `gcc>=8`. Depending on which platform you are on, you might experience that the default gcc is a lower version. You can check your gcc version by running `gcc -v`.
