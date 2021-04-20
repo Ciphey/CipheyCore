@@ -139,6 +139,23 @@ namespace ciphey {
     return caesar::detect(freq_conv(in->freqs, in->len), expected, in->len);
   }
 
+  inline prob_t playfair_detect(std::shared_ptr<simple_analysis_res> observed, domain_t domain, string_t str) {
+    return playfair::detect(freq_conv(observed->freqs, observed->len), domain, str);
+  }
+
+  inline string_t playfair_decrypt(string_t str, ciphey::playfair::key_t ktable) {
+    return playfair::decrypt(str, ktable);
+  }
+
+  inline std::vector<crack_result<ciphey::playfair::key_t>> playfair_crack(std::shared_ptr<simple_analysis_res> observed,
+                                                                  prob_table expected,
+                                                                  domain_t domain,
+                                                                  string_t str,
+                                                                  prob_t p_value)
+  {
+    return playfair::crack(freq_conv(observed->freqs, observed->len), expected, domain, str, observed->len, p_value);
+  }
+
   inline std::vector<ciphey::crack_result<ciphey::vigenere::key_t>> vigenere_crack(std::shared_ptr<windowed_analysis_res> in,
                                                                                    prob_table expected,
                                                                                    group_t group,

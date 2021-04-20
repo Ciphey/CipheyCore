@@ -13,6 +13,10 @@ namespace ciphey {
     using key_t = size_t;
   }
 
+  namespace playfair {
+    using key_t = std::vector<char_t>;
+  }
+
   namespace vigenere {
     /// A sequence of offsets
     using key_t = std::vector<size_t>;
